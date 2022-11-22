@@ -15,6 +15,14 @@ class Timer {
     this.#initialSeconds = minutes * 60 + seconds;
   }
 
+  get minutes() {
+    return this.#minutes;
+  }
+
+  get seconds() {
+    return this.#seconds;
+  }
+
   #timer() {
     this.#previousSeconds = Math.floor(performance.now() / 1000);
     if (this.#currentSeconds != this.#previousSeconds) {
@@ -23,7 +31,7 @@ class Timer {
         this.#seconds = 59;
         this.#minutes--;
       } else if ((this.#minutes === 0) && (this.#seconds === 0)) {
-        this.stop();
+        this.#stop();
       }
       Renderer.updateClockFace(this.#minutes, this.#seconds);
       Renderer.updateTimeBar(this.#initialSeconds, false);
@@ -37,7 +45,7 @@ class Timer {
 
   }
 
-  stop() {
+  #stop() {
     clearInterval(this.#interval);
     Renderer.updateClockFace(this.#minutes, this.#seconds);
     Renderer.updateTimeBar(this.#initialSeconds, true);
@@ -96,6 +104,12 @@ class Renderer {
 
   static clockFaceColorWork() {
     this.#clockFace.style.color = "tomato";
+    this.#timeBar.style.backgroundColor = "rgb(157, 207, 83)";
+  }
+
+  static clockFaceColorTimeOut() {
+    this.#clockFace.style.color = "rgb(255, 42, 63)";
+    this.#timeBar.style.backgroundColor = "rgb(255, 42, 63)";
   }
 }
 
@@ -107,14 +121,13 @@ class Pomodoro {
   #continueButton = document.querySelector(".continue");
   #workTime = [0, 2];
   #shortBreak = [0, 2];
-  #breakTimeOut = [0, 10];
+  #breakTimeOut = [2, 0];
   #buttonPressed = false;
 
   loop() {
     this.#continueButton.addEventListener("click", () => {
       this.#buttonPressed = true;
-      this.#continueButton.disabled = true;
-      this.#continueButton.style.background = "#424752";
+      this.#disableContinueButton();
       setTimeout(() => {
         this.#enableStartButton();
         Renderer.resetTimeBar();
@@ -140,14 +153,14 @@ class Pomodoro {
     return new Promise(resolve => {
       setTimeout(() => {
         resolve(this.#timer.completed);
-      }, 2000);
+      }, 3000);
     });
   }
   
   async #waitForBreak() {
     const hasStopped = await this.#checkIfTimerStopped();
     if (hasStopped === false) {
-      return this.#waitForBreak();
+      this.#waitForBreak();
     } else {
       Renderer.updateClockFace(...this.#shortBreak);
       Renderer.clockFaceColorBreak();
@@ -161,10 +174,9 @@ class Pomodoro {
   async #breakTime() {
     const hasStopped = await this.#checkIfTimerStopped();
     if (hasStopped === false) {
-      return this.#breakTime();
+      this.#breakTime();
     } else {
       Renderer.resetTimeBar();
-      Renderer.clockFaceColorWork();
       this.#timer = new Timer(...this.#breakTimeOut);
       Renderer.updateClockFace(...this.#breakTimeOut);
       this.#timer.start();
@@ -176,13 +188,17 @@ class Pomodoro {
 
   async #waitFromBreak() {
     const hasStopped = await this.#checkIfTimerStopped();
+    if (this.#timer.minutes < 1) {
+      Renderer.clockFaceColorTimeOut();
+    }
     if (this.#buttonPressed) {
       this.#timer.stopButton();
       return;
     } else if (hasStopped === false) {
-      return this.#waitFromBreak();
+      this.#waitFromBreak();
     } else {
-      return alert("game over");
+      this.#disableContinueButton();
+      return console.log("game over");
     }
   }
 
@@ -203,6 +219,11 @@ class Pomodoro {
     this.#continueButton.style.background = "rgb(157, 207, 83)";
     this.#startButton.style.display = "none";
     this.#continueButton.style.display = "block";
+  }
+
+  #disableContinueButton() {
+    this.#continueButton.disabled = true;
+    this.#continueButton.style.background = "#424752";
   }
 }
 

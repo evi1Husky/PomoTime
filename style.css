@@ -16,7 +16,7 @@ body {
   justify-content: center; 
   align-items: center;
   width: 100vw;
-  height: 100dvh;
+  height: 100vh;
 }
 
 .pomodoro {
@@ -79,6 +79,7 @@ button {
 }
 
 .continue {
+  font-size: 3rem;
   display: none;
 }
 
