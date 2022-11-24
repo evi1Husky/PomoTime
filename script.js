@@ -15,6 +15,14 @@ class Timer {
     this.#tZero  = minutes * 60 + seconds;
   }
 
+  get minutes() {
+    return this.#minutes;
+  }
+
+  get seconds() {
+    return this.#seconds;
+  }
+
   #timer() {
     this.#t2 = performance.now();
     const time = this.#tZero + ((this.#t1 - this.#t2) / 1000) << 0;
@@ -33,10 +41,10 @@ class Timer {
     this.#t1 = performance.now();
   }
 
-  stop(buttonUsed) {
+  stop(buttonPressed) {
     clearInterval(this.#interval);
     this.completed = true;
-    if (!buttonUsed) {
+    if (!buttonPressed) {
       Renderer.setTimeBarTo0();
     }
   }
@@ -62,16 +70,14 @@ class Renderer {
   static #timeBar = document.getElementById("time-bar");
   static #timeBarContainer = document.getElementById("time-bar-container");
 
-  static updateTimeBar(initialSeconds, timerStopped) {
+  static updateTimeBar(initialSeconds) {
     const decrement = 100 / initialSeconds;
     let containerWidth = getComputedStyle(this.#timeBarContainer).width;
     let timeBarWidth = getComputedStyle(this.#timeBar).width;
     timeBarWidth = timeBarWidth.replace(/[^\d.-]/g,"");
     containerWidth = containerWidth.replace(/[^\d.-]/g,"");
-    let widthPercent = timeBarWidth / containerWidth;
-    widthPercent *= 100;
-    widthPercent -= decrement;
-    this.#timeBar.style.width = widthPercent + "%";
+    const widthPercent = ((timeBarWidth / containerWidth) * 100) - decrement;
+    this.#timeBar.style.width = `${widthPercent}%`;
   }
 
   static setTimeBarTo0() {
@@ -95,6 +101,23 @@ class Renderer {
     this.#clockFace.style.color = "rgb(255, 42, 63)";
     this.#timeBar.style.backgroundColor = "rgb(255, 42, 63)";
   }
+
+  static #startButton = document.querySelector(".start");
+  static #continueButton = document.querySelector(".continue");
+
+  static #addEventListener(button) {
+    button.addEventListener("mouseover", () => {
+      button.style.background = "tomato";
+    });
+    button.addEventListener("mouseleave", () => {
+      button.style.background = "#9dcf53";
+    });
+  }
+
+  static addButtonEffects() {
+    this.#addEventListener(this.#startButton);
+    this.#addEventListener(this.#continueButton);
+  }
 }
 
 // Main class, contains game loop and logic 
@@ -106,10 +129,11 @@ class Pomodoro {
   #workTime = [0, 5];
   #shortBreak = [0, 3];
   #longBreak = [0, 7];
-  #breakTimeOut = [0, 30];
+  #breakTimeOut = [1, 10];
   #buttonPressed = false;
 
   loop() {
+    Renderer.addButtonEffects();
     this.#continueButton.addEventListener("click", () => {
       this.#buttonPressed = true;
       this.#disableContinueButton();
@@ -117,8 +141,6 @@ class Pomodoro {
       setTimeout(() => {
         Renderer.clockFaceColorWork();
         Renderer.updateClockFace(...this.#workTime);
-      }, 3000);
-      setTimeout(() => {
         this.#startButton.click();
       }, 3000);
     });
@@ -142,10 +164,10 @@ class Pomodoro {
       }, 3000);
     });
   }
-  
+
   async #waitForBreak() {
     const hasStopped = await this.#checkIfTimerStopped();
-    if (hasStopped === false) {
+    if (!hasStopped) {
       this.#waitForBreak();
     } else {
       Renderer.updateClockFace(...this.#shortBreak);
@@ -158,12 +180,11 @@ class Pomodoro {
 
   async #breakTime() {
     const hasStopped = await this.#checkIfTimerStopped();
-    if (hasStopped === false) {
-      this.#breakTime();
+    if (!hasStopped) {
+      await this.#breakTime();
     } else {
-      Renderer.resetTimeBar();
-      this.#timer = new Timer(...this.#breakTimeOut);
       Renderer.updateClockFace(...this.#breakTimeOut);
+      this.#timer = new Timer(...this.#breakTimeOut);
       this.#timer.start();
       this.#buttonPressed = false;
       this.#enableContinueButton();
@@ -179,7 +200,7 @@ class Pomodoro {
     if (this.#buttonPressed) {
       this.#timer.stop(true);
       return;
-    } else if (hasStopped === false) {
+    } else if (!hasStopped) {
       this.#waitFromBreak();
     } else {
       this.#disableContinueButton();

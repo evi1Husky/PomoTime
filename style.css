@@ -78,9 +78,20 @@ button {
   cursor: default;
 }
 
+button:active {
+  width: 7.9rem;
+  height: 7.9rem;
+  font-size: 1.97rem;
+  margin-bottom: 0.1rem;
+}
+
 .continue {
   font-size: 3rem;
   display: none;
+}
+
+.continue:active {
+  font-size: 2.9rem;
 }
 
 .game-score {
