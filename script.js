@@ -1,61 +1,44 @@
 // Self adjusting timer, using performance.now() to calculate time delta
 
 class Timer {
-  #previousSeconds = Math.floor(performance.now() / 1000);
-  #currentSeconds = Math.floor(performance.now() / 1000);
-  #interval = Object;
-  #minutes = 0;
-  #seconds = 0;
-  #initialSeconds = 0;
+  #tZero = null;
+  #t1 = null;
+  #t2 = null;
+  #interval = null;
+  #minutes = null;
+  #seconds = null;
   completed = false;
 
   constructor(minutes, seconds) {
     this.#minutes = minutes;
     this.#seconds = seconds;
-    this.#initialSeconds = minutes * 60 + seconds;
-  }
-
-  get minutes() {
-    return this.#minutes;
-  }
-
-  get seconds() {
-    return this.#seconds;
+    this.#tZero  = minutes * 60 + seconds;
   }
 
   #timer() {
-    this.#previousSeconds = Math.floor(performance.now() / 1000);
-    if (this.#currentSeconds != this.#previousSeconds) {
-      this.#seconds += this.#currentSeconds - this.#previousSeconds;
-      if ((this.#seconds < 0) && (this.#minutes >= 0)) {
-        this.#seconds = 59;
-        this.#minutes--;
-      } else if ((this.#minutes === 0) && (this.#seconds === 0)) {
-        this.#stop();
-      }
-      Renderer.updateClockFace(this.#minutes, this.#seconds);
-      Renderer.updateTimeBar(this.#initialSeconds, false);
+    this.#t2 = performance.now();
+    const time = this.#tZero + ((this.#t1 - this.#t2) / 1000) << 0;
+    this.#minutes = (time / 60) << 0;
+    this.#seconds = time - ((time / 60) << 0) * 60;
+    if ((this.#minutes === 0) && (this.#seconds === 0)) {
+      this.stop(false);
     }
-    this.#currentSeconds = this.#previousSeconds;
+    Renderer.updateClockFace(this.#minutes, this.#seconds);
+    Renderer.updateTimeBar(this.#tZero, false);
   }
 
   start() {
-    this.#timer();
-    this.#interval = setInterval(() => this.#timer(), 450);
-
+    Renderer.resetTimeBar();
+    this.#interval = setInterval(() => this.#timer(), 980);
+    this.#t1 = performance.now();
   }
 
-  #stop() {
+  stop(buttonUsed) {
     clearInterval(this.#interval);
-    Renderer.updateClockFace(this.#minutes, this.#seconds);
-    Renderer.updateTimeBar(this.#initialSeconds, true);
     this.completed = true;
-  }
-
-  stopButton() {
-    clearInterval(this.#interval);
-    Renderer.updateClockFace(this.#minutes, this.#seconds);
-    this.completed = true;
+    if (!buttonUsed) {
+      Renderer.setTimeBarTo0();
+    }
   }
 }
 
@@ -89,9 +72,10 @@ class Renderer {
     widthPercent *= 100;
     widthPercent -= decrement;
     this.#timeBar.style.width = widthPercent + "%";
-    if (timerStopped) {
-      this.#timeBar.style.width = "0%";
-    }
+  }
+
+  static setTimeBarTo0() {
+    this.#timeBar.style.width = "0%";
   }
 
   static resetTimeBar() {
@@ -119,20 +103,23 @@ class Pomodoro {
   #timer = Object;
   #startButton = document.querySelector(".start");
   #continueButton = document.querySelector(".continue");
-  #workTime = [0, 2];
-  #shortBreak = [0, 2];
-  #breakTimeOut = [2, 0];
+  #workTime = [0, 5];
+  #shortBreak = [0, 3];
+  #longBreak = [0, 7];
+  #breakTimeOut = [0, 30];
   #buttonPressed = false;
 
   loop() {
     this.#continueButton.addEventListener("click", () => {
       this.#buttonPressed = true;
       this.#disableContinueButton();
+      this.#startButton.disabled = false;
       setTimeout(() => {
-        this.#enableStartButton();
-        Renderer.resetTimeBar();
         Renderer.clockFaceColorWork();
         Renderer.updateClockFace(...this.#workTime);
+      }, 3000);
+      setTimeout(() => {
+        this.#startButton.click();
       }, 3000);
     });
     Renderer.updateClockFace(...this.#workTime);
@@ -140,7 +127,6 @@ class Pomodoro {
     this.#buttonPressed = true;
     this.#startButton.addEventListener("click", () => {
       this.#disableStartButton();
-      Renderer.resetTimeBar();
       Renderer.clockFaceColorWork();
       Renderer.updateClockFace(...this.#workTime);
       this.#timer = new Timer(...this.#workTime);
@@ -165,7 +151,6 @@ class Pomodoro {
       Renderer.updateClockFace(...this.#shortBreak);
       Renderer.clockFaceColorBreak();
       this.#timer = new Timer(...this.#shortBreak);
-      Renderer.resetTimeBar();
       this.#timer.start();
       this.#breakTime();
     }
@@ -192,26 +177,19 @@ class Pomodoro {
       Renderer.clockFaceColorTimeOut();
     }
     if (this.#buttonPressed) {
-      this.#timer.stopButton();
+      this.#timer.stop(true);
       return;
     } else if (hasStopped === false) {
       this.#waitFromBreak();
     } else {
       this.#disableContinueButton();
-      return console.log("game over");
+      return alert("game over");
     }
   }
 
   #disableStartButton() {
     this.#startButton.disabled = true;
     this.#startButton.style.background = "#424752";
-  }
-
-  #enableStartButton() {
-    this.#startButton.disabled = false;
-    this.#startButton.style.background = "rgb(157, 207, 83)";
-    this.#startButton.style.display = "block";
-    this.#continueButton.style.display = "none";
   }
 
   #enableContinueButton() {
