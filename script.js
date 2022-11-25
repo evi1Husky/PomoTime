@@ -8,6 +8,7 @@ class Renderer {
 
   static updateClockFace(message) {
     if (typeof message === "number"){
+      Renderer.resetTimeBar();
       this.#initialSeconds = message;
     }
     if (Array.isArray(message)) {
@@ -55,43 +56,35 @@ class Renderer {
 }
 
 class Pomodoro {
-  workTime = [0, 7];
-  shortBreak = [0, 3];
-  longBreak = [0, 15];
-  breakTimeOut = [1, 10];
   #startButton = document.querySelector(".start");
+  timerStage = 1;
+  timers = {
+    1: [0, 7],
+    2: [0, 5],
+    3: [0, 15],
+    4: [1, 10]
+  };
 
   loop() {
-    Renderer.updateClockFace(this.workTime);
+    Renderer.updateClockFace(this.timers[this.timerStage]);
     this.#startButton.addEventListener("click", () => {
       Renderer.disableStartButton();
-      Renderer.updateClockFace(this.workTime);
-      Renderer.resetTimeBar();
       let timerWorker = new Worker("timerWorker.js");
       timerWorker.onmessage = function(event){
-        if (event.data === "completed"){
-          setTimeout(() => {
-            Renderer.enableStartButton();
-            Renderer.updateClockFace(pomodoro.workTime);
-            Renderer.resetTimeBar();
-          }, 100);
+        if (event.data === "stopped"){
+          pomodoro.timerStage++;
+          timerWorker.postMessage(pomodoro.timers[pomodoro.timerStage]);
         } else {
           Renderer.updateClockFace(event.data);
         }
       };
-      timerWorker.postMessage(this.workTime);
+      timerWorker.postMessage(this.timers[this.timerStage]);
     });
   }
 }
 
 let pomodoro = new Pomodoro();
 pomodoro.loop();
-
-
-
-
-
-
 
 
 

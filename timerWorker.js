@@ -21,7 +21,6 @@ class Timer {
       this.#minutes = 0;
       this.#seconds = 0;
       this.stop();
-      postMessage("completed");
     }
     postMessage([this.#minutes, this.#seconds]);
   }
@@ -34,11 +33,13 @@ class Timer {
 
   stop() {
     clearInterval(this.#interval);
+    postMessage("stopped");
   }
 }
 
 self.onmessage = function(event){
   let timer = new Timer(...event.data);
+  self.postMessage([...event.data]);
   timer.start();
 };
 
