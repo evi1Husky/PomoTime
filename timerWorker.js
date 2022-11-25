@@ -21,8 +21,9 @@ class Timer {
       this.#minutes = 0;
       this.#seconds = 0;
       this.stop();
+      postMessage("completed");
     }
-    this.#output(this.#minutes, this.#seconds);
+    postMessage([this.#minutes, this.#seconds]);
   }
 
   start() {
@@ -34,13 +35,16 @@ class Timer {
   stop() {
     clearInterval(this.#interval);
   }
-
-  #output(minutes, seconds) {
-    seconds = (seconds < 10) ? "0" + seconds : seconds;
-    minutes = (minutes < 10) ? "0" + minutes : minutes;
-    postMessage(`${minutes}:${seconds}`);
-  }
 }
 
-let timer = new Timer(24, 57);
-timer.start();
+self.onmessage = function(event){
+  let timer = new Timer(...event.data);
+  timer.start();
+};
+
+
+
+
+
+
+
