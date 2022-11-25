@@ -78,12 +78,13 @@ class Pomodoro {
   #startButton = document.querySelector(".start");
   #timerWorker = new Worker("timerWorker.js");
   #round = 1;
-  #timerStage = 1;
+  #buttonClicked = false;
   #setTimeOut = 0;
+  #timerStage = 1;
   #timers = {
-    1: [0, 7],
-    2: [0, 6],
-    3: [0, 10],
+    1: [0, 3],
+    2: [0, 2],
+    3: [0, 2],
   };
 
   loop() {
@@ -91,18 +92,20 @@ class Pomodoro {
     this.#startButton.addEventListener("click", () => {
       pomodoro.#timerStage = 1;
       Renderer.disableStartButton();
-      if (this.#round > 1) {
+      if (this.#buttonClicked) {
+        this.#round++;
         this.#timerWorker.terminate();
         this.#timerWorker = null;
         this.#timerWorker = new Worker("timerWorker.js");
         this.#setTimeOut = 1500;
       }
+      this.#buttonClicked = true;
       setTimeout(() => {
+        this.#checkForLongBreak(this.#round);
         Renderer.updateClockColor(pomodoro.#timerStage);
         this.#timerWorker.onmessage = function handler(event){
           if (event.data === "stopped"){
             pomodoro.#timerStage++;
-            pomodoro.#round++;
             Renderer.updateClockColor(pomodoro.#timerStage);
             if (pomodoro.#timerStage === 3) {
               Renderer.enableStartButton();
@@ -122,6 +125,15 @@ class Pomodoro {
   #gameOver() {
     this.#timerWorker.terminate();
     Renderer.disableStartButton();
+  }
+
+  #checkForLongBreak(round) {
+    if (round % 4 === 0) {
+      this.#timers[2] = [15, 0];
+    } else {
+      this.#timers[2] = [0, 7];
+    }
+    console.log(this.#timers[2]);
   }
 }
 
