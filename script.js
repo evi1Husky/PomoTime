@@ -57,28 +57,42 @@ class Renderer {
 
 class Pomodoro {
   #startButton = document.querySelector(".start");
-  timerStage = 1;
-  timers = {
-    1: [0, 7],
-    2: [0, 5],
+  #timerWorker = new Worker("timerWorker.js");
+  #round = 1;
+  #timerStage = 1;
+  #setTimeOut = 0;
+  #timers = {
+    1: [0, 3],
+    2: [0, 2],
     3: [0, 15],
-    4: [1, 10]
   };
 
   loop() {
-    Renderer.updateClockFace(this.timers[this.timerStage]);
+    Renderer.updateClockFace(this.#timers[this.#timerStage]);
     this.#startButton.addEventListener("click", () => {
+      pomodoro.#timerStage = 1;
       Renderer.disableStartButton();
-      let timerWorker = new Worker("timerWorker.js");
-      timerWorker.onmessage = function(event){
-        if (event.data === "stopped"){
-          pomodoro.timerStage++;
-          timerWorker.postMessage(pomodoro.timers[pomodoro.timerStage]);
-        } else {
-          Renderer.updateClockFace(event.data);
-        }
-      };
-      timerWorker.postMessage(this.timers[this.timerStage]);
+      if (this.#round > 1) {
+        this.#timerWorker.terminate();
+        this.#timerWorker = null;
+        this.#timerWorker = new Worker("timerWorker.js");
+        this.#setTimeOut = 1500;
+      }
+      setTimeout(() => {
+        this.#timerWorker.onmessage = function handler(event){
+          if (event.data === "stopped"){
+            pomodoro.#timerStage++;
+            pomodoro.#round++;
+            if (pomodoro.#timerStage === 3) {
+              Renderer.enableStartButton();
+            }
+            pomodoro.#timerWorker.postMessage(pomodoro.#timers[pomodoro.#timerStage]);
+          } else {
+            Renderer.updateClockFace(event.data);
+          }
+        };
+        this.#timerWorker.postMessage(this.#timers[this.#timerStage]);
+      }, this.#setTimeOut);
     });
   }
 }

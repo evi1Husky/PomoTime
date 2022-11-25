@@ -12,6 +12,14 @@ class Timer {
     this.#tZero  = minutes * 60 + seconds;
   }
 
+  get output() {
+    return [this.#minutes, this.#seconds];
+  }
+
+  get initialTimeSeconds() {
+    return this.#tZero;
+  }
+
   #timer() {
     this.#t2 = performance.now();
     const time = this.#tZero + ((this.#t1 - this.#t2) / 1000) << 0;
@@ -22,11 +30,11 @@ class Timer {
       this.#seconds = 0;
       this.stop();
     }
-    postMessage([this.#minutes, this.#seconds]);
+    postMessage(this.output);
   }
 
   start() {
-    postMessage(this.#tZero);
+    postMessage(this.initialTimeSeconds);
     this.#t1 = performance.now();
     this.#interval = setInterval(() => this.#timer(), 990);
   }
