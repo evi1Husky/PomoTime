@@ -73,6 +73,8 @@ class Renderer {
     if ((mode === 2) && (time[0] < 2) && (time[1] < 30)) {
       this.#clockFace.style.color = "rgb(255, 42, 63)";
       this.#timeBar.style.backgroundColor = "rgb(255, 42, 63)";
+      const audioElement = new Audio("alert1.wav");
+      audioElement.play();
     }
   }
 
@@ -100,7 +102,7 @@ class Pomodoro {
   #setTimeOut = 0;
   #timerMode = 1;
   #timers = {
-    1: [0, 10],
+    1: [0, 5],
     2: [0, 5],
   };
 
@@ -152,7 +154,7 @@ class Pomodoro {
     if (round % 4 === 0) {
       this.#timers[2] = [15, 0];
     } else {
-      this.#timers[2] = [5, 0];
+      this.#timers[2] = [2, 0];
     }
   }
 }
