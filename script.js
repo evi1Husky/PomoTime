@@ -6,7 +6,7 @@ class Renderer {
   static #timeBar = document.getElementById("time-bar");
   static #timeBarContainer = document.getElementById("time-bar-container");
   static #initialSeconds = undefined;
-  static #startButton = document.querySelector(".start");
+  static #startButton = document.getElementById("start");
 
   static updateClockFace(message) {
     if (typeof message === "number"){
@@ -45,8 +45,8 @@ class Renderer {
   }
 
   static disableStartButton() {
-    this.#startButton.disabled = true;
     this.#startButton.style.background = "#424752";
+    this.#startButton.disabled = true;
   }
 
   static enableStartButton() {
@@ -73,8 +73,6 @@ class Renderer {
     if ((mode === 2) && (time[0] < 2) && (time[1] < 30)) {
       this.#clockFace.style.color = "rgb(255, 42, 63)";
       this.#timeBar.style.backgroundColor = "rgb(255, 42, 63)";
-      const audioElement = new Audio("alert1.wav");
-      audioElement.play();
     }
   }
 
@@ -94,15 +92,31 @@ class Renderer {
   }
 }
 
+class AudioPlayer {
+  static #timerAlarm = new Audio("alert1.wav");
+
+  static alarm(time) {
+    if ((time[0] === 0) && (time[1] === 13)) {
+      this.#timerAlarm.play();
+    }
+  }
+
+  static safariHack() {
+    this.#timerAlarm.play();
+    this.#timerAlarm.pause();
+    this.#timerAlarm.currentTime = 0;
+  }
+}
+
 class Pomodoro {
-  #startButton = document.querySelector(".start");
+  #startButton = document.getElementById("start");
   #timerWorker = new Worker("timerWorker.js");
   #round = 1;
   #buttonClicked = false;
   #setTimeOut = 0;
   #timerMode = 1;
   #timers = {
-    1: [0, 5],
+    1: [0, 20],
     2: [0, 5],
   };
 
@@ -118,6 +132,8 @@ class Pomodoro {
         this.#timerWorker = null;
         this.#timerWorker = new Worker("timerWorker.js");
         this.#setTimeOut = 1500;
+      } else {
+        AudioPlayer.safariHack();
       }
       this.#buttonClicked = true;
       setTimeout(() => {
@@ -138,6 +154,7 @@ class Pomodoro {
           } else {
             Renderer.updateClockColor(pomodoro.#timerMode, event.data);
             Renderer.updateClockFace(event.data);
+            AudioPlayer.alarm(event.data);
           }
         };
         this.#timerWorker.postMessage(this.#timers[this.#timerMode]);
@@ -152,9 +169,9 @@ class Pomodoro {
 
   #checkForLongBreak(round) {
     if (round % 4 === 0) {
-      this.#timers[2] = [15, 0];
+      this.#timers[2] = [0, 50];
     } else {
-      this.#timers[2] = [2, 0];
+      this.#timers[2] = [0, 40];
     }
   }
 }
