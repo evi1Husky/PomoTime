@@ -81,8 +81,12 @@ button {
 button:active {
   width: 7.9rem;
   height: 7.9rem;
-  font-size: 1.9rem;
+  font-size: 1.95rem;
   margin-bottom: 0.1rem;
+}
+
+button:disabled {
+  pointer-events: none;
 }
 
 .game-score {

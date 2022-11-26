@@ -72,6 +72,21 @@ class Renderer {
       break;
     }
   }
+
+  static buttonEffects(button) {
+    button.addEventListener("mouseover", () => {
+      button.style.background = "tomato";
+    });
+    button.addEventListener("mouseleave", () => {
+      button.style.background = "#9dcf53";
+    });
+    button.addEventListener("touchstart", () => {
+      button.style.background = "tomato";
+    });
+    button.addEventListener("touchend", () => {
+      button.style.background = "#9dcf53";
+    });
+  }
 }
 
 class Pomodoro {
@@ -89,6 +104,7 @@ class Pomodoro {
 
   loop() {
     Renderer.updateClockFace(this.#timers[this.#timerStage]);
+    Renderer.buttonEffects(this.#startButton);
     this.#startButton.addEventListener("click", () => {
       pomodoro.#timerStage = 1;
       Renderer.disableStartButton();
@@ -107,10 +123,13 @@ class Pomodoro {
           if (event.data === "stopped"){
             pomodoro.#timerStage++;
             Renderer.updateClockColor(pomodoro.#timerStage);
-            if (pomodoro.#timerStage === 3) {
+            switch (pomodoro.#timerStage) {
+            case 3:
               Renderer.enableStartButton();
-            } else if (pomodoro.#timerStage === 4) {
+              break;
+            case 4:
               pomodoro.#gameOver();
+              break;
             }
             pomodoro.#timerWorker.postMessage(pomodoro.#timers[pomodoro.#timerStage]);
           } else {
@@ -129,11 +148,10 @@ class Pomodoro {
 
   #checkForLongBreak(round) {
     if (round % 4 === 0) {
-      this.#timers[2] = [15, 0];
+      this.#timers[2] = [0, 5];
     } else {
-      this.#timers[2] = [0, 7];
+      this.#timers[2] = [0, 3];
     }
-    console.log(this.#timers[2]);
   }
 }
 
