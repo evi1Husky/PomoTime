@@ -6,7 +6,7 @@ class Renderer {
   static #timeBar = document.getElementById("time-bar");
   static #timeBarContainer = document.getElementById("time-bar-container");
   static #initialSeconds = undefined;
-  static #startButton = document.getElementById("start");
+  static #startButton = document.querySelector(".start");
 
   static updateClockFace(message) {
     if (typeof message === "number"){
@@ -70,7 +70,7 @@ class Renderer {
       this.#clockFace.style.color = "#424752";
       break;
     }
-    if ((mode === 2) && (time[0] < 2) && (time[1] < 30)) {
+    if ((mode === 2) && (time[0] < 1)) {
       this.#clockFace.style.color = "rgb(255, 42, 63)";
       this.#timeBar.style.backgroundColor = "rgb(255, 42, 63)";
     }
@@ -93,18 +93,21 @@ class Renderer {
 }
 
 class AudioPlayer {
-  static #timerAlarm = new Audio("alert1.wav");
+  static timerAlarm = new Audio("alert1.wav");
 
-  static alarm(time) {
-    if ((time[0] === 0) && (time[1] === 13)) {
-      this.#timerAlarm.play();
+  static alarm(time, mode) {
+    if ((time[0] === 0) && (time[1] === this.timerAlarm.duration << 0)) {
+      this.timerAlarm.play();
+    }
+    if ((mode === 2)&&(time[0] === 0) && (time[1] === 59)) {
+      this.timerAlarm.play();
     }
   }
 
   static safariHack() {
-    this.#timerAlarm.play();
-    this.#timerAlarm.pause();
-    this.#timerAlarm.currentTime = 0;
+    this.timerAlarm.play();
+    this.timerAlarm.pause();
+    this.timerAlarm.currentTime = 0;
   }
 }
 
@@ -116,14 +119,15 @@ class Pomodoro {
   #setTimeOut = 0;
   #timerMode = 1;
   #timers = {
-    1: [0, 20],
-    2: [0, 5],
+    1: [0, 16],
+    2: [1, 50],
   };
 
   loop() {
     Renderer.updateClockFace(this.#timers[this.#timerMode]);
     Renderer.buttonEffects(this.#startButton);
     this.#startButton.addEventListener("click", () => {
+      AudioPlayer.safariHack();
       pomodoro.#timerMode = 1;
       Renderer.disableStartButton();
       if (this.#buttonClicked) {
@@ -132,8 +136,6 @@ class Pomodoro {
         this.#timerWorker = null;
         this.#timerWorker = new Worker("timerWorker.js");
         this.#setTimeOut = 1500;
-      } else {
-        AudioPlayer.safariHack();
       }
       this.#buttonClicked = true;
       setTimeout(() => {
@@ -154,7 +156,7 @@ class Pomodoro {
           } else {
             Renderer.updateClockColor(pomodoro.#timerMode, event.data);
             Renderer.updateClockFace(event.data);
-            AudioPlayer.alarm(event.data);
+            AudioPlayer.alarm(event.data, pomodoro.#timerMode);
           }
         };
         this.#timerWorker.postMessage(this.#timers[this.#timerMode]);
@@ -171,7 +173,7 @@ class Pomodoro {
     if (round % 4 === 0) {
       this.#timers[2] = [0, 50];
     } else {
-      this.#timers[2] = [0, 40];
+      this.#timers[2] = [1, 50];
     }
   }
 }
