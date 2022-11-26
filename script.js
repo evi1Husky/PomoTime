@@ -1,3 +1,5 @@
+"use strict";
+
 class Renderer {
   static #tab = document.getElementById("tab");
   static #clockFace = document.getElementById("clock-face");
@@ -54,7 +56,7 @@ class Renderer {
     this.#startButton.style.fontSize = "2.5rem";
   }
 
-  static updateClockColor(mode) {
+  static updateClockColor(mode, time) {
     switch (mode) {
     case 1:
       this.#clockFace.style.color = "tomato";
@@ -62,14 +64,15 @@ class Renderer {
       break;
     case 2:
       this.#clockFace.style.color = "rgb(157, 207, 83)";
+      this.#timeBar.style.backgroundColor = "rgb(157, 207, 83)";
       break;
     case 3:
-      this.#clockFace.style.color = "rgb(255, 42, 63)";
-      this.#timeBar.style.backgroundColor = "rgb(255, 42, 63)";
-      break;
-    case 4:
       this.#clockFace.style.color = "#424752";
       break;
+    }
+    if ((mode === 2) && (time[0] < 2) && (time[1] < 30)) {
+      this.#clockFace.style.color = "rgb(255, 42, 63)";
+      this.#timeBar.style.backgroundColor = "rgb(255, 42, 63)";
     }
   }
 
@@ -95,18 +98,17 @@ class Pomodoro {
   #round = 1;
   #buttonClicked = false;
   #setTimeOut = 0;
-  #timerStage = 1;
+  #timerMode = 1;
   #timers = {
-    1: [0, 3],
-    2: [0, 2],
-    3: [0, 2],
+    1: [0, 10],
+    2: [0, 5],
   };
 
   loop() {
-    Renderer.updateClockFace(this.#timers[this.#timerStage]);
+    Renderer.updateClockFace(this.#timers[this.#timerMode]);
     Renderer.buttonEffects(this.#startButton);
     this.#startButton.addEventListener("click", () => {
-      pomodoro.#timerStage = 1;
+      pomodoro.#timerMode = 1;
       Renderer.disableStartButton();
       if (this.#buttonClicked) {
         this.#round++;
@@ -118,25 +120,25 @@ class Pomodoro {
       this.#buttonClicked = true;
       setTimeout(() => {
         this.#checkForLongBreak(this.#round);
-        Renderer.updateClockColor(pomodoro.#timerStage);
         this.#timerWorker.onmessage = function handler(event){
           if (event.data === "stopped"){
-            pomodoro.#timerStage++;
-            Renderer.updateClockColor(pomodoro.#timerStage);
-            switch (pomodoro.#timerStage) {
-            case 3:
+            pomodoro.#timerMode++;
+            switch (pomodoro.#timerMode) {
+            case 2:
               Renderer.enableStartButton();
               break;
-            case 4:
+            case 3:
               pomodoro.#gameOver();
+              Renderer.updateClockColor(pomodoro.#timerMode, event.data);
               break;
             }
-            pomodoro.#timerWorker.postMessage(pomodoro.#timers[pomodoro.#timerStage]);
+            pomodoro.#timerWorker.postMessage(pomodoro.#timers[pomodoro.#timerMode]);
           } else {
+            Renderer.updateClockColor(pomodoro.#timerMode, event.data);
             Renderer.updateClockFace(event.data);
           }
         };
-        this.#timerWorker.postMessage(this.#timers[this.#timerStage]);
+        this.#timerWorker.postMessage(this.#timers[this.#timerMode]);
       }, this.#setTimeOut);
     });
   }
@@ -148,9 +150,9 @@ class Pomodoro {
 
   #checkForLongBreak(round) {
     if (round % 4 === 0) {
-      this.#timers[2] = [0, 5];
+      this.#timers[2] = [15, 0];
     } else {
-      this.#timers[2] = [0, 3];
+      this.#timers[2] = [5, 0];
     }
   }
 }
