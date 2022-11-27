@@ -113,6 +113,11 @@ class Renderer {
   static updateTomatoArray(score) {
     if (score != 0) {
       this.#tomatoArray.appendChild(this.#tomatoFactory(score));
+      const tomato = document.getElementById(`tomato${score}`);
+      tomato.style.animationName = "grow";
+      setTimeout(() => {
+        tomato.style.animationName = "none";
+      }, 300);
     }
   }
 
@@ -121,7 +126,6 @@ class Renderer {
     tomato.classList.add("array-tomato");
     tomato.setAttribute("src", "reshot-icon-tomato-S69C7UDGRW.svg");
     tomato.setAttribute("id", `tomato${id}`);
-    console.log(id);
     return tomato;
   }
 }
@@ -163,7 +167,7 @@ class Pomodoro {
   #setTimeOut = 0;
   #currentTimer = 1;
   #workTime = [0, 2];
-  #shortBreak = [0, 2];
+  #shortBreak = [1, 20];
   #longBreak = [0, 3];
   #timerSchedule = {
     1: this.#workTime,
