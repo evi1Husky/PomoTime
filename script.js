@@ -94,6 +94,7 @@ class Renderer {
 
 class AudioPlayer {
   static #timerAlarm = new Audio("alert1.wav");
+  static #buttonClick = new Audio("mixkit-mouse-click-close-1113.wav");
 
   static alarm(time, timer) {
     if ((time[0] === 0) && (time[1] === this.#timerAlarm.duration << 0)) {
@@ -105,14 +106,18 @@ class AudioPlayer {
   }
 
   static buttonClick() {
-    const click = new Audio("mixkit-mouse-click-close-1113.wav");
-    click.play();
+    this.#buttonClick.play();
   }
 
   static resetAlarm() {
-    this.#timerAlarm.play();
     this.#timerAlarm.pause();
     this.#timerAlarm.currentTime = 0;
+  }
+
+  static addAudioContext() {
+    const audioContext = window.AudioContext;
+    const audioCtx = new audioContext();
+    return audioCtx;
   }
 }
 
@@ -122,8 +127,8 @@ class Pomodoro {
   #buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [0, 2];
-  #shortBreak = [0, 2];
+  #workTime = [0, 16];
+  #shortBreak = [0, 40];
   #longBreak = [0, 5];
   #timerSchedule = {
     1: this.#workTime,
@@ -139,15 +144,18 @@ class Pomodoro {
       pomodoro.#currentTimer = 1;
       this.#round++;
       Renderer.disableStartButton();
+      if (!this.#buttonClicked) {
+        AudioPlayer.addAudioContext();
+      }
       if (this.#buttonClicked) {
         this.#timerWorker.terminate();
         this.#timerWorker = null;
         this.#timerWorker = new Worker("timerWorker.js");
         this.#setTimeOut = 1500;
       }
-      this.#buttonClicked = true;
       AudioPlayer.buttonClick();
       setTimeout(() => {
+        this.#buttonClicked = true;
         this.#checkForLongBreak(this.#round);
         this.#timerWorker.onmessage = function handler(event){
           if (event.data === "stopped"){
