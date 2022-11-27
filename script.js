@@ -94,7 +94,6 @@ class Renderer {
 
 class AudioPlayer {
   static #timerAlarm = new Audio("alert1.wav");
-  static #buttonClick = new Audio("mixkit-mouse-click-close-1113.wav");
 
   static alarm(time, timer) {
     if ((time[0] === 0) && (time[1] === this.#timerAlarm.duration << 0)) {
@@ -106,7 +105,8 @@ class AudioPlayer {
   }
 
   static buttonClick() {
-    this.#buttonClick.play();
+    const click = new Audio("mixkit-mouse-click-close-1113.wav");
+    click.play();
   }
 
   static resetAlarm() {
@@ -138,7 +138,6 @@ class Pomodoro {
       AudioPlayer.resetAlarm();
       pomodoro.#currentTimer = 1;
       this.#round++;
-      console.log(this.#round);
       Renderer.disableStartButton();
       if (this.#buttonClicked) {
         this.#timerWorker.terminate();
