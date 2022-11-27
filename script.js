@@ -222,7 +222,8 @@ class Pomodoro {
 
   #checkIfAllTomatosGathered(tomatoArray) {
     if (tomatoArray.length === 18) {
-      return alert("all tomatos have been gathered");
+      this.#timerWorker.terminate();
+      Renderer.disableStartButton();
     }
   }
 
