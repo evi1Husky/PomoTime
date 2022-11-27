@@ -48,7 +48,7 @@ class Timer {
 }
 
 self.onmessage = function(event){
-  let timer = new Timer(...event.data);
+  const timer = new Timer(...event.data);
   self.postMessage([...event.data]);
   timer.start();
 };
