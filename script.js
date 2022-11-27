@@ -106,6 +106,7 @@ class AudioPlayer {
   }
 
   static buttonClick() {
+    this.#buttonClick = new Audio("mixkit-mouse-click-close-1113.wav");
     this.#buttonClick.play();
   }
 
@@ -128,7 +129,7 @@ class Pomodoro {
   #setTimeOut = 0;
   #currentTimer = 1;
   #workTime = [0, 16];
-  #shortBreak = [0, 40];
+  #shortBreak = [1, 10];
   #longBreak = [0, 5];
   #timerSchedule = {
     1: this.#workTime,
