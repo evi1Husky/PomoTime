@@ -114,6 +114,7 @@ class Renderer {
     if (score != 0) {
       this.#tomatoArray.appendChild(this.#tomatoFactory(score));
       const tomato = document.getElementById(`tomato${score}`);
+      AudioPlayer.tomatoPop();
       this.#tomatoGrowAnimation(tomato);
     }
   }
@@ -166,6 +167,7 @@ class Renderer {
 class AudioPlayer {
   static #timerAlarm = new Audio("alert1.wav");
   static #buttonClick = new Audio("mixkit-mouse-click-close-1113.wav");
+  static #pop = new Audio("mixkit-long-pop-2358.wav");
 
   static alarm(time, timer) {
     if ((time[0] === 0) && (time[1] === this.#timerAlarm.duration << 0)) {
@@ -179,6 +181,10 @@ class AudioPlayer {
   static buttonClick() {
     this.#buttonClick = new Audio("mixkit-mouse-click-close-1113.wav");
     this.#buttonClick.play();
+  }
+
+  static tomatoPop() {
+    this.#pop.play();
   }
 
   static resetAlarm() {
