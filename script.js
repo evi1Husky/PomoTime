@@ -42,6 +42,10 @@ class Renderer {
     }
   }
 
+  static updateTab(message) {
+    this.#tab.textContent = message;
+  }
+
   static resetTimeBar() {
     this.#timeBar.style.width = "100%";
   }
@@ -78,6 +82,15 @@ class Renderer {
     }
   }
 
+  static idleClockFace(round) {
+    if (round != 0){
+      this.#clockFace.textContent = "--:--";
+      this.#tab.textContent = "--:--";
+      this.#clockFace.style.color = "#a4a6aa";
+      this.#timeBar.style.backgroundColor = "#a4a6aa";
+    }
+  }
+
   static buttonEffects(button) {
     button.addEventListener("mouseover", () => {
       button.style.background = "tomato";
@@ -99,14 +112,16 @@ class Renderer {
 
   static updateTomatoArray(score) {
     if (score != 0) {
-      this.#tomatoArray.appendChild(this.#tomatoFactory());
+      this.#tomatoArray.appendChild(this.#tomatoFactory(score));
     }
   }
 
-  static #tomatoFactory() {
+  static #tomatoFactory(id) {
     const tomato = document.createElement("img");
     tomato.classList.add("array-tomato");
     tomato.setAttribute("src", "reshot-icon-tomato-S69C7UDGRW.svg");
+    tomato.setAttribute("id", `tomato${id}`);
+    console.log(id);
     return tomato;
   }
 }
@@ -160,8 +175,10 @@ class Pomodoro {
 
   loop() {
     Renderer.updateClockFace(this.#timerSchedule[this.#currentTimer]);
+    Renderer.updateTab("PomoTime");
     Renderer.buttonEffects(this.#startButton);
     this.#startButton.addEventListener("click", () => {
+      Renderer.idleClockFace(this.#round);
       AudioPlayer.resetAlarm();
       pomodoro.#currentTimer = 1;
       Renderer.disableStartButton();
@@ -172,7 +189,7 @@ class Pomodoro {
         this.#timerWorker.terminate();
         this.#timerWorker = null;
         this.#timerWorker = new Worker("timerWorker.js");
-        this.#setTimeOut = 1500;
+        this.#setTimeOut = 1000;
       }
       AudioPlayer.buttonClick();
       setTimeout(() => {

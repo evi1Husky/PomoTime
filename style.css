@@ -118,6 +118,15 @@ button:disabled {
 .array-tomato {
   width: 2rem;
   margin-right: 0.2rem;
+  animation-name: none;
+  animation-duration: 0.4s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes grow {
+  0%   {font-size: 0rem; width: none;}
+  15%  {font-size: 8.5rem; width: 10.2rem;}
+  100% {font-size: 6rem; width: none;}
 }
 
 .total-score {
