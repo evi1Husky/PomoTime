@@ -36,7 +36,7 @@ body {
 header {
   display: flex;
   margin-left: 1rem;
-  margin-top: 10.5%;
+  margin-top: 9.3%;
 
 }
 
@@ -59,7 +59,7 @@ header img {
 }
 
 .clock-face {
-  margin-top: 5%;
+  margin-top: 5.3%;
   color: tomato;
   font-size: 12rem;
 }
@@ -103,40 +103,32 @@ button:disabled {
 
 .game-score {
   color: #a4a6aa;
-  margin-left: 5rem;
-  margin-top: 11%;
+  margin-left: 4rem;
+  margin-top: 12.3%;
   display: flex;
   align-self: flex-start;
 }
 
 .score-tomato {
   width: 2.1rem;
-  margin-bottom: 3rem;
-  margin-right: 0.5rem;
+  margin-right: 0.6rem;
+  margin-bottom: 1.3rem;
 }
 
 .array-tomato {
   width: 2rem;
-  margin-top: 0.5%;
 }
 
 .total-score {
   display: flex;
   margin-top: 5%;
-  width: 6rem;
+  width: 7rem;
   font-size: 2rem;
-}
-
-.total-score span {
-  margin-top: 0.08rem;
-
 }
 
 .pomodoro-array {
-  width: 20rem;
+  width: 22rem;
   font-size: 2rem;
-  margin-left: 1.2rem;
-  letter-spacing: 0.1rem;
 }
 
 @media (max-width:420px) {

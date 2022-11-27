@@ -7,6 +7,8 @@ class Renderer {
   static #timeBarContainer = document.getElementById("time-bar-container");
   static #initialSeconds = undefined;
   static #startButton = document.querySelector(".start");
+  static #totalTomatoScore = document.querySelector(".total-tomato-score");
+  static #tomatoArray = document.querySelector(".pomodoro-array");
 
   static updateClockFace(message) {
     if (typeof message === "number"){
@@ -90,6 +92,23 @@ class Renderer {
       button.style.background = "#9dcf53";
     });
   }
+
+  static updateTomatoScore(tomatoScore) {
+    this.#totalTomatoScore.textContent = tomatoScore;
+  }
+
+  static updateTomatoArray(score) {
+    if (score != 0) {
+      this.#tomatoArray.appendChild(this.#tomatoFactory());
+    }
+  }
+
+  static #tomatoFactory() {
+    const tomato = document.createElement("img");
+    tomato.classList.add("array-tomato");
+    tomato.setAttribute("src", "reshot-icon-tomato-S69C7UDGRW.svg");
+    return tomato;
+  }
 }
 
 class AudioPlayer {
@@ -128,14 +147,16 @@ class Pomodoro {
   #buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [0, 16];
-  #shortBreak = [1, 10];
-  #longBreak = [0, 5];
+  #workTime = [0, 2];
+  #shortBreak = [0, 2];
+  #longBreak = [0, 3];
   #timerSchedule = {
     1: this.#workTime,
     2: this.#shortBreak,
   };
   #round = 0;
+  #tomatoArray = [];
+  #tomatoScore = 0;
 
   loop() {
     Renderer.updateClockFace(this.#timerSchedule[this.#currentTimer]);
@@ -143,7 +164,6 @@ class Pomodoro {
     this.#startButton.addEventListener("click", () => {
       AudioPlayer.resetAlarm();
       pomodoro.#currentTimer = 1;
-      this.#round++;
       Renderer.disableStartButton();
       if (!this.#buttonClicked) {
         AudioPlayer.addAudioContext();
@@ -157,6 +177,11 @@ class Pomodoro {
       AudioPlayer.buttonClick();
       setTimeout(() => {
         this.#buttonClicked = true;
+        this.#addTomatoToArray(this.#round);
+        Renderer.updateTomatoScore(this.#tomatoScore);
+        Renderer.updateTomatoArray(this.#tomatoScore);
+        this.#checkIfAllTomatosGathered(this.#tomatoArray);
+        this.#round++;
         this.#checkForLongBreak(this.#round);
         this.#timerWorker.onmessage = function handler(event){
           if (event.data === "stopped"){
@@ -192,6 +217,19 @@ class Pomodoro {
       this.#timerSchedule[2] = this.#longBreak;
     } else {
       this.#timerSchedule[2] = this.#shortBreak;
+    }
+  }
+
+  #checkIfAllTomatosGathered(tomatoArray) {
+    if (tomatoArray.length === 18) {
+      return alert("all tomatos have been gathered");
+    }
+  }
+
+  #addTomatoToArray(round) {
+    if (round != 0) {
+      this.#tomatoArray.push("🍅");
+      this.#tomatoScore++;
     }
   }
 }
