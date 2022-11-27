@@ -135,7 +135,6 @@ class Pomodoro {
     Renderer.updateClockFace(this.#timerSchedule[this.#currentTimer]);
     Renderer.buttonEffects(this.#startButton);
     this.#startButton.addEventListener("click", () => {
-      AudioPlayer.buttonClick();
       AudioPlayer.resetAlarm();
       pomodoro.#currentTimer = 1;
       this.#round++;
@@ -148,6 +147,7 @@ class Pomodoro {
         this.#setTimeOut = 1500;
       }
       this.#buttonClicked = true;
+      AudioPlayer.buttonClick();
       setTimeout(() => {
         this.#checkForLongBreak(this.#round);
         this.#timerWorker.onmessage = function handler(event){
