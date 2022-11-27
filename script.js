@@ -114,11 +114,44 @@ class Renderer {
     if (score != 0) {
       this.#tomatoArray.appendChild(this.#tomatoFactory(score));
       const tomato = document.getElementById(`tomato${score}`);
-      tomato.style.animationName = "grow";
-      setTimeout(() => {
-        tomato.style.animationName = "none";
-      }, 300);
+      this.#tomatoGrowAnimation(tomato);
     }
+  }
+
+  static #tomatoGrowAnimation(tomato) {
+    let height = 0;
+    let width = 0;
+    tomato.style.width = `${width}rem`;
+    tomato.style.height = `${height}rem`;
+    tomato.style.position = "absolute";
+
+    function tomatoGrow() {
+      if (height >= 2.3) {
+        window.cancelAnimationFrame(tomatoGrow);
+        tomatoShrink();
+      } else {
+        height += 0.2;
+        width += 0.2;
+        tomato.style.width = `${width}rem`;
+        tomato.style.height = `${height}rem`;
+        requestAnimationFrame(tomatoGrow);
+      }
+    }
+
+    function tomatoShrink() {
+      if (height <= 2) {
+        window.cancelAnimationFrame(tomatoShrink);
+        tomato.style.position = "relative";
+      } else {
+        height -= 0.3;
+        width -= 0.3;
+        tomato.style.width = `${width}rem`;
+        tomato.style.height = `${height}rem`;
+        requestAnimationFrame(tomatoShrink);
+      }
+    }
+
+    tomatoGrow();
   }
 
   static #tomatoFactory(id) {
@@ -149,6 +182,7 @@ class AudioPlayer {
   }
 
   static resetAlarm() {
+    this.#timerAlarm.play();
     this.#timerAlarm.pause();
     this.#timerAlarm.currentTime = 0;
   }
@@ -166,7 +200,7 @@ class Pomodoro {
   #buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [0, 2];
+  #workTime = [0, 1];
   #shortBreak = [1, 20];
   #longBreak = [0, 3];
   #timerSchedule = {
