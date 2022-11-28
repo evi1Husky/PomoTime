@@ -9,6 +9,7 @@ class Renderer {
   static #startButton = document.querySelector(".start");
   static #totalTomatoScore = document.querySelector(".total-tomato-score");
   static #tomatoArray = document.querySelector(".pomodoro-array");
+  static #infoDisplay = document.querySelector(".info-display");
 
   static updateClockFace(message) {
     if (typeof message === "number"){
@@ -162,6 +163,10 @@ class Renderer {
     tomato.setAttribute("id", `tomato${id}`);
     return tomato;
   }
+
+  static updateInfoDisplay(text) {
+    this.#infoDisplay.textContent = text;
+  }
 }
 
 class AudioPlayer {
@@ -237,6 +242,7 @@ class Pomodoro {
 
   loop() {
     const isIos = Utility.detectiOS();
+    Renderer.updateInfoDisplay("Press the start button to begin. ✨");
     Renderer.updateClockFace(this.#timerSchedule[this.#currentTimer]);
     Renderer.updateTab("PomoTime");
     Renderer.buttonEffects(this.#startButton);

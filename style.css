@@ -54,7 +54,7 @@ header img {
 
 .info-display {
   margin-top: 6.5%;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   color: #a4a6aa;
 }
 
@@ -129,7 +129,7 @@ button:disabled {
 }
 
 .pomodoro-array {
-  width: 21rem;
+  width: 19rem;
   font-size: 2rem;
   margin-left: 0.8rem;
 }
