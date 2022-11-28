@@ -144,6 +144,7 @@ class Renderer {
       if (height <= 2) {
         window.cancelAnimationFrame(tomatoShrink);
         tomato.style.position = "relative";
+        return;
       } else {
         height -= 0.3;
         width -= 0.3;
@@ -194,6 +195,7 @@ class Renderer {
     function textAppear() {
       if (opacity === 100) {
         window.cancelAnimationFrame(textAppear);
+        return;
       }
       opacity += 4;
       textElement.style.opacity = `${opacity}%`;
@@ -265,8 +267,8 @@ class Pomodoro {
   #buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [0, 30];
-  #shortBreak = [1, 20];
+  #workTime = [0, 2];
+  #shortBreak = [1, 2];
   #longBreak = [0, 3];
   #timerSchedule = {
     1: this.#workTime,
