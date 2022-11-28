@@ -164,8 +164,42 @@ class Renderer {
     return tomato;
   }
 
-  static updateInfoDisplay(text) {
-    this.#infoDisplay.textContent = text;
+  static updateInfoDisplay(message, currentTimer) {
+    const previousText = this.#infoDisplay.textContent;
+    if (message === null) {
+      this.#infoDisplay.textContent = "Press start to begin ✨";
+    }
+    if (currentTimer === 1) {
+      this.#infoDisplay.textContent = "Time to focus";
+    }
+    if ((currentTimer === 1) && (message[0] < 1) && (message[1] < 20)) {
+      this.#infoDisplay.textContent = "It's time to take a break";
+    }
+    if (currentTimer === 2) {
+      this.#infoDisplay.textContent = "It's time to take a break";
+      this.#tab.textContent = "break time";
+    }
+    if ((currentTimer === 2) && (message[0] < 1)) {
+      this.#infoDisplay.textContent = "Time is running out 🔥";
+    }
+    const textNow = this.#infoDisplay.textContent;
+    if (previousText != textNow) {
+      this.#textAnimation(this.#infoDisplay);
+    }
+  }
+
+  static #textAnimation(textElement) {
+    let opacity = 0;
+    textElement.style.opacity = `${opacity}%`;
+    function textAppear() {
+      if (opacity === 100) {
+        window.cancelAnimationFrame(textAppear);
+      }
+      opacity += 4;
+      textElement.style.opacity = `${opacity}%`;
+      requestAnimationFrame(textAppear);
+    }
+    textAppear();
   }
 }
 
@@ -191,9 +225,11 @@ class AudioPlayer {
 
   static tomatoPop(isIos) {
     if(isIos) {
-      this.#pop = new Audio("mixkit-long-pop-2358.wav");
+      let pop = new Audio("mixkit-long-pop-2358.wav");
+      pop.play();
+    } else {
+      this.#pop.play();
     }
-    this.#pop.play();
   }
 
   static resetAlarm() {
@@ -229,7 +265,7 @@ class Pomodoro {
   #buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [0, 1];
+  #workTime = [0, 30];
   #shortBreak = [1, 20];
   #longBreak = [0, 3];
   #timerSchedule = {
@@ -242,7 +278,7 @@ class Pomodoro {
 
   loop() {
     const isIos = Utility.detectiOS();
-    Renderer.updateInfoDisplay("Press the start button to begin. ✨");
+    Renderer.updateInfoDisplay(null, null);
     Renderer.updateClockFace(this.#timerSchedule[this.#currentTimer]);
     Renderer.updateTab("PomoTime");
     Renderer.buttonEffects(this.#startButton);
@@ -285,6 +321,7 @@ class Pomodoro {
           } else {
             Renderer.updateClockColor(event.data, pomodoro.#currentTimer);
             Renderer.updateClockFace(event.data);
+            Renderer.updateInfoDisplay(event.data, pomodoro.#currentTimer);
             AudioPlayer.alarm(event.data, pomodoro.#currentTimer);
           }
         };
