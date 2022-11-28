@@ -179,8 +179,9 @@ class AudioPlayer {
   }
 
   static buttonClick() {
-    this.#buttonClick = new Audio("mixkit-mouse-click-close-1113.wav");
-    this.#buttonClick.play();
+    if (!Utility.detectiOS()) {
+      this.#buttonClick.play();
+    }
   }
 
   static tomatoPop() {
@@ -197,6 +198,20 @@ class AudioPlayer {
     const audioContext = window.AudioContext;
     const audioCtx = new audioContext();
     return audioCtx;
+  }
+}
+
+class Utility {
+  static detectiOS() {
+    let platform = window.navigator?.userAgentData?.platform || window.navigator.platform,
+      iosPlatforms = ["iPhone", "iPad", "iPod"],
+      iOS = null;
+    if (iosPlatforms.indexOf(platform) !== -1) {
+      iOS = true;
+    } else {
+      iOS = false;
+    }
+    return iOS;
   }
 }
 
