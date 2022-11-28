@@ -111,11 +111,11 @@ class Renderer {
     this.#totalTomatoScore.textContent = tomatoScore;
   }
 
-  static updateTomatoArray(score, isIos) {
+  static updateTomatoArray(score) {
     if (score != 0) {
       this.#tomatoArray.appendChild(this.#tomatoFactory(score));
       const tomato = document.getElementById(`tomato${score}`);
-      AudioPlayer.tomatoPop(isIos);
+      AudioPlayer.tomatoPop();
       this.#tomatoGrowAnimation(tomato);
     }
   }
@@ -203,6 +203,37 @@ class Renderer {
     }
     textAppear();
   }
+
+  static gameOverTakeAwayTomatos(amount) {
+    let timeOut = 0;
+    for (let i = amount; i >= 1; i--) {
+      timeOut += 700;
+      setTimeout(() => {
+        const tomato = document.getElementById(`tomato${i}`);
+        Renderer.#tomatoShrinkAnimation(tomato);
+      }, timeOut);
+    }
+  }
+
+  static #tomatoShrinkAnimation(tomato) {
+    let height = 2;
+    tomato.style.height = `${height}rem`;
+
+    function tomatoShrink() {
+      if (height <= 0) {
+        Renderer.#tomatoArray.removeChild(tomato);
+        Renderer.#totalTomatoScore.textContent -= 1;
+        window.cancelAnimationFrame(tomatoShrink);
+        return;
+      } else {
+        height -= 0.2;
+        tomato.style.height = `${height}rem`;
+        requestAnimationFrame(tomatoShrink);
+      }
+    }
+
+    tomatoShrink();
+  }
 }
 
 class AudioPlayer {
@@ -225,13 +256,9 @@ class AudioPlayer {
     }
   }
 
-  static tomatoPop(isIos) {
-    if(isIos) {
-      let pop = new Audio("mixkit-long-pop-2358.wav");
-      pop.play();
-    } else {
-      this.#pop.play();
-    }
+  static tomatoPop() {
+    this.#pop.play();
+
   }
 
   static resetAlarm() {
@@ -267,8 +294,8 @@ class Pomodoro {
   #buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [0, 2];
-  #shortBreak = [1, 2];
+  #workTime = [0, 0];
+  #shortBreak = [0, 1];
   #longBreak = [0, 3];
   #timerSchedule = {
     1: this.#workTime,
@@ -296,14 +323,14 @@ class Pomodoro {
         this.#timerWorker.terminate();
         this.#timerWorker = null;
         this.#timerWorker = new Worker("timerWorker.js");
-        this.#setTimeOut = 1000;
+        this.#setTimeOut = 700;
       }
       AudioPlayer.buttonClick(isIos);
       setTimeout(() => {
         this.#buttonClicked = true;
         this.#addTomatoToArray(this.#round);
         Renderer.updateTomatoScore(this.#tomatoScore);
-        Renderer.updateTomatoArray(this.#tomatoScore, isIos);
+        Renderer.updateTomatoArray(this.#tomatoScore);
         this.#checkIfAllTomatosGathered(this.#tomatoArray);
         this.#round++;
         this.#checkForLongBreak(this.#round);
@@ -335,6 +362,11 @@ class Pomodoro {
   #gameOver() {
     this.#timerWorker.terminate();
     Renderer.disableStartButton();
+    const length = pomodoro.#tomatoArray.length;
+    Renderer.gameOverTakeAwayTomatos(length);
+    pomodoro.#tomatoScore -= length;
+    pomodoro.#tomatoArray.length = 0;
+    pomodoro.#round = 0;
   }
 
   #checkForLongBreak(round) {
