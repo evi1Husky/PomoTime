@@ -55,8 +55,11 @@ header img {
 .info-display {
   margin-top: 6.5%;
   font-size: 1.6rem;
+  padding-left: 3rem;
+  padding-right: 3rem;
   height: 2rem;
   color: #a4a6aa;
+  text-align: center;
 }
 
 .clock-face {
@@ -102,9 +105,15 @@ button:disabled {
   pointer-events: none;
 }
 
+#try-again {
+  display: none;
+  font-size: 1.89rem;
+  background: #a4a6aa;
+}
+
 .game-score {
   color: #a4a6aa;
-  margin-left: 4.5rem;
+  margin-left: 4.3rem;
   margin-top: 12.3%;
   display: flex;
   align-self: flex-start;
@@ -125,14 +134,13 @@ button:disabled {
 .total-score {
   display: flex;
   margin-top: 5%;
-  width: 7rem;
+  width: 9rem;
   font-size: 2rem;
 }
 
 .pomodoro-array {
   width: 19rem;
   font-size: 2rem;
-  margin-left: 0.8rem;
 }
 
 @media screen and (max-width:420px) {
