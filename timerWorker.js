@@ -1,5 +1,8 @@
 "use strict";
 
+/* Accurate timer with low pollong rate, using a web worker thread 
+to avoind throttling and performance.now() for time calculation */
+
 class Timer {
   #minutes = null;
   #seconds = null;
