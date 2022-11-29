@@ -178,7 +178,7 @@ class Renderer {
     return tomato;
   }
 
-  static updateInfoDisplay(message, currentTimer) {
+  static updateInfoDisplay(message, currentTimer, pomodoroJustRecieved) {
     const previousText = this.#infoDisplay.textContent;
     if (message === null) {
       this.#infoDisplay.textContent = "Press start to begin ✨";
@@ -195,6 +195,9 @@ class Renderer {
     }
     if ((currentTimer === 2) && (message[0] < 1)) {
       this.#infoDisplay.textContent = "Time is running out 🔥";
+    }
+    if (pomodoroJustRecieved) {
+      this.#infoDisplay.textContent = "+1 🍅";
     }
     const textNow = this.#infoDisplay.textContent;
     if (previousText != textNow) {
@@ -375,9 +378,9 @@ class Pomodoro {
   #buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [0, 0];
-  #shortBreak = [0, 3];
-  #longBreak = [1, 10];
+  #workTime = [2, 10];
+  #shortBreak = [2, 0];
+  #longBreak = [2, 25];
   #timerSchedule = {
     1: this.#workTime,
     2: this.#shortBreak,
@@ -387,6 +390,7 @@ class Pomodoro {
   #tomatoArray = [];
   tomatoScore = 0;
   #tomatosToWin = 18;
+  #pomodoroJustRecieved = false;
 
   loop() {
     this.tomatoScore = Utility.loadProgress();
@@ -438,7 +442,8 @@ class Pomodoro {
           } else {
             Renderer.updateClockColor(event.data, pomodoro.#currentTimer);
             Renderer.updateClockFace(event.data);
-            Renderer.updateInfoDisplay(event.data, pomodoro.#currentTimer);
+            Renderer.updateInfoDisplay(event.data, pomodoro.#currentTimer,
+              pomodoro.#pomodoroJustRecieved);
             AudioPlayer.alarm(event.data, pomodoro.#currentTimer);
           }
         };
@@ -510,11 +515,14 @@ class Pomodoro {
       this.#tomatoArray.push("🍅");
       this.tomatoScore++;
       this.#currentGameScore++;
+      this.#pomodoroJustRecieved = true;
+      setTimeout(() => {
+        this.#pomodoroJustRecieved = false;
+      }, 4000);
       Utility.saveProgress(this.tomatoScore);
     }
   }
 }
 
-localStorage.clear();
 let pomodoro = new Pomodoro();
 pomodoro.loop();

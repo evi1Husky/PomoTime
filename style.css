@@ -121,7 +121,7 @@ button:disabled {
 .game-score {
   color: #a4a6aa;
   margin-left: 4.3rem;
-  margin-top: 12.3%;
+  margin-top: 9%;
   display: flex;
   align-self: flex-start;
 }
@@ -129,7 +129,7 @@ button:disabled {
 .score-tomato {
   width: 1.6rem;
   margin-right: 0.6rem;
-  margin-bottom: 1.3rem;
+  margin-bottom: 4rem;
 }
 
 .array-tomato {
@@ -140,13 +140,14 @@ button:disabled {
 
 .total-score {
   display: flex;
-  margin-top: 4.5%;
+  margin-top: 12%;
   width: 9rem;
   font-size: 1.5rem;
 }
 
 .pomodoro-array {
-  width: 19rem;
+  margin-left: 0.8rem;
+  width: 12rem;
   font-size: 2rem;
 }
 
