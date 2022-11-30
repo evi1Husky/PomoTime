@@ -13,8 +13,6 @@ class Renderer {
   static #totalTomatoScore = document.querySelector(".total-tomato-score");
   static #tomatoArray = document.querySelector(".pomodoro-array");
   static #infoDisplay = document.querySelector(".info-display");
-  static #totalScore = document.querySelector(".total-score");
-  static #tomatoSVG = document.querySelector(".score-tomato");
 
   static updateClockFace(message) {
     if (typeof message === "number"){
@@ -219,8 +217,8 @@ class Renderer {
       this.#clockFace.style.fontSize = "4.5rem";
       this.#clockFace.style.padding = "11.5%";
       this.#timeBar.style.display = "none";
-      this.#infoDisplay.textContent = 
-        "You've gathered all the 🍅, congratulations.";
+      this.#infoDisplay.innerHTML = 
+        "You've gathered all the 🍅 <br>congratulations ✨";
       this.#tab.textContent = "PomoTimer";
     }
   }
@@ -282,78 +280,83 @@ class Renderer {
   }
 }
 
-// AudioPlayer class loads and plays audio files
+/* AudioPlayer class uses Web Audio API to load and play sound effects,
+as well as provide volume control */
 
 class AudioPlayer {
-  static #timerAlarm = new Audio("alert1.wav");
-  static #buttonClick = new Audio("mixkit-mouse-click-close-1113.wav");
-  static #pop = new Audio("mixkit-long-pop-2358.wav");
-  static #shrink =
-    new Audio("mixkit-bubble-pop-up-alert-notification-2357.wav");
-  static #gameOver = new Audio("mixkit-dramatic-metal-explosion-impact-1687.wav");
-  static #gameWin = new Audio("mixkit-game-success-alert-2039.wav");
+  static #soundsArray = [
+    new Audio("alert1.wav"),
+    new Audio("mixkit-mouse-click-close-1113.wav"),
+    new Audio("mixkit-long-pop-2358.wav"),
+    new Audio("mixkit-bubble-pop-up-alert-notification-2357.wav"),
+    new Audio("mixkit-dramatic-metal-explosion-impact-1687.wav"),
+    new Audio("mixkit-game-success-alert-2039.wav")
+  ];
+
+  static #sourcesArray = [];
+  static effectsVolume = null;
+  static alarmVolume = null;
+
+  static createAudioContext() {
+    return new (window.AudioContext);
+  }
+
+  static connectAudioNodes(audioContext) {
+    this.effectsVolume = audioContext.createGain();
+    this.alarmVolume = audioContext.createGain();
+    this.effectsVolume.connect(audioContext.destination);
+    this.alarmVolume.connect(audioContext.destination);
+    for (let index = 0; index < this.#soundsArray.length; index++) {
+      this.#sourcesArray.push(
+        audioContext.createMediaElementSource(this.#soundsArray[index]));
+      this.#sourcesArray[index].connect(audioContext.destination);
+      if (index === 0) {
+        this.#sourcesArray[index].connect(this.alarmVolume);
+      } else {
+        this.#sourcesArray[index].connect(this.effectsVolume);
+      }
+    }
+    this.alarmVolume.gain.value = -0.7;
+    this.effectsVolume.gain.value = -0.7;
+  }
 
   static alarm(time, timer) {
-    if ((time[0] === 0) && (time[1] === this.#timerAlarm.duration << 0)) {
-      this.#timerAlarm.play();
+    if ((time[0] === 0) && (time[1] === this.#soundsArray[0].duration << 0)) {
+      this.#soundsArray[0].play();
     }
     if ((timer === 2)&&(time[0] === 0) && (time[1] === 59)) {
-      this.#timerAlarm.play();
+      this.#soundsArray[0].play();
     }
   }
 
-  static gameOverSound() {
-    this.#gameOver.play();
-  }
-
-  static gameWinSound() {
-    this.#gameWin.play();
-  }
-
-  static buttonClick(isIos) {
-    if (!isIos) {
-      this.#buttonClick.play();
-    }
+  static buttonClick() {
+    this.#soundsArray[1].play();
   }
 
   static tomatoPop() {
-    this.#pop.play();
-
+    this.#soundsArray[2].play();
   }
 
   static tomatoShrink() {
-    this.#shrink.play();
+    this.#soundsArray[3].play();
+  }
+
+  static gameOverSound() {
+    this.#soundsArray[4].play();
+  }
+
+  static gameWinSound() {
+    this.#soundsArray[5].play();
   }
 
   static resetAlarm() {
-    this.#timerAlarm.play();
-    this.#timerAlarm.pause();
-    this.#timerAlarm.currentTime = 0;
-  }
-
-  static addAudioContext() {
-    const audioContext = window.AudioContext;
-    const audioCtx = new audioContext();
-    return audioCtx;
+    this.#soundsArray[0].pause();
   }
 }
 
-// Utility class with misc methods for accessing local storage, detecting iOS etc 
+// Utility class with misc methods for accessing local storage etc 
 
 class Utility {
-  static detectiOS() {
-    let platform = 
-    window.navigator?.userAgentData?.platform || window.navigator.platform,
-      iosPlatforms = ["iPhone", "iPad", "iPod"],
-      iOS = null;
-    if (iosPlatforms.indexOf(platform) !== -1) {
-      iOS = true;
-    } else {
-      iOS = false;
-    }
-    return iOS;
-  }
-
   static saveProgress(num) {
     let score =+ num;
     localStorage.setItem("pomodoroScore", score);
@@ -378,9 +381,9 @@ class Pomodoro {
   #buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [2, 10];
-  #shortBreak = [2, 0];
-  #longBreak = [2, 25];
+  #workTime = [0, 15];
+  #shortBreak = [0, 0];
+  #longBreak = [0, 0];
   #timerSchedule = {
     1: this.#workTime,
     2: this.#shortBreak,
@@ -389,13 +392,12 @@ class Pomodoro {
   #currentGameScore = 0;
   #tomatoArray = [];
   tomatoScore = 0;
-  #tomatosToWin = 18;
+  #tomatosToWin = 7;
   #pomodoroJustRecieved = false;
 
   loop() {
     this.tomatoScore = Utility.loadProgress();
     Renderer.updateTomatoScore(this.tomatoScore);
-    const isIos = Utility.detectiOS();
     Renderer.updateInfoDisplay(null, null);
     Renderer.updateClockFace(this.#timerSchedule[this.#currentTimer]);
     Renderer.updateTab("PomoTime");
@@ -403,20 +405,21 @@ class Pomodoro {
     Renderer.buttonEffects(this.#tryAgain);
     Renderer.buttonEffects(this.#closeButton);
     this.#startButton.addEventListener("click", () => {
+      if (!this.#buttonClicked) {
+        let audioContext = AudioPlayer.createAudioContext();
+        AudioPlayer.connectAudioNodes(audioContext);
+      }
       Renderer.idleClockFace(this.#round);
       AudioPlayer.resetAlarm();
-      pomodoro.#currentTimer = 1;
+      this.#currentTimer = 1;
       Renderer.disableStartButton();
-      if (!this.#buttonClicked) {
-        AudioPlayer.addAudioContext();
-      }
       if (this.#buttonClicked) {
         this.#timerWorker.terminate();
         this.#timerWorker = null;
         this.#timerWorker = new Worker("timerWorker.js");
         this.#setTimeOut = 700;
       }
-      AudioPlayer.buttonClick(isIos);
+      AudioPlayer.buttonClick();
       setTimeout(() => {
         this.#buttonClicked = true;
         this.#addTomatoToArray(this.#round);
@@ -456,22 +459,23 @@ class Pomodoro {
     this.#timerWorker.terminate();
     Renderer.disableStartButton();
     AudioPlayer.gameOverSound();
-    const length = pomodoro.#tomatoArray.length;
-    pomodoro.#round = 0;
-    pomodoro.tomatoScore -= 100;
-    Utility.saveProgress(this.tomatoScore);
-    pomodoro.tomatoScore -= length;
+    const length = this.#tomatoArray.length;
+    this.#round = 0;
     Renderer.gameOverTakeAwayTomatos(length);
-    Renderer.endGameMessage(true, pomodoro.#tomatoArray.length);
-    pomodoro.#tomatoArray.length = 0;
-    pomodoro.#tryAgainButtonEvent();
+    Renderer.endGameMessage(true, this.#tomatoArray.length);
+    this.tomatoScore -= this.#tomatoArray.length;
+    this.#tomatoArray.length = 0;
+    Utility.saveProgress(this.tomatoScore);
+    this.tomatoScore -= 10;
+    Utility.saveProgress(this.tomatoScore);
+    this.#tryAgainButtonEvent();
   }
 
   #tryAgainButtonEvent() {
-    pomodoro.#tryAgain.addEventListener("click", () => {
-      AudioPlayer.buttonClick(pomodoro.isIos);
-      pomodoro.#tryAgain.style.background = "#424752";
-      pomodoro.#tryAgain.disabled = true;
+    this.#tryAgain.addEventListener("click", () => {
+      AudioPlayer.buttonClick(this.isIos);
+      this.#tryAgain.style.background = "#424752";
+      this.#tryAgain.disabled = true;
       setTimeout(() => {
         location.reload();
       }, 500);
@@ -493,16 +497,16 @@ class Pomodoro {
   }
 
   #gameWon() {
-    pomodoro.tomatoScore += 100;
+    this.tomatoScore += 10;
     Utility.saveProgress(this.tomatoScore);
     Renderer.updateTomatoScore(this.tomatoScore);
     AudioPlayer.gameWinSound();
     this.#timerWorker.terminate();
     this.#startButton.style.display = "none";
     this.#closeButton.style.display = "block";
-    Renderer.endGameMessage(false, pomodoro.#tomatoArray.length);
+    Renderer.endGameMessage(false, this.#tomatoArray.length);
     this.#closeButton.addEventListener("click", () => {
-      AudioPlayer.buttonClick(pomodoro.isIos);
+      AudioPlayer.buttonClick(this.isIos);
       this.#closeButton.style.background = "#424752";
       setTimeout(() => {
         document.body.innerHTML = "";
