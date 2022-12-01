@@ -55,11 +55,15 @@ class Renderer {
   }
 
   static disableStartButton() {
-    this.#startButton.style.background = "#424752";
+    this.#startButton.style.pointerEvents = "none";
     this.#startButton.disabled = true;
+    setTimeout(() => {
+      this.#startButton.style.background = "#424752";
+    }, 30);
   }
 
   static enableStartButton() {
+    this.#startButton.style.pointerEvents = "auto";
     this.#startButton.disabled = false;
     this.#startButton.style.background = "rgb(157, 207, 83)";
     this.#startButton.textContent = "➜";
@@ -280,7 +284,7 @@ class Renderer {
   }
 }
 
-/* AudioPlayer class uses Web Audio API to load and play sound effects,
+/* AudioPlayer class, uses Web Audio API to load and play sound effects,
 as well as provide volume control */
 
 class AudioPlayer {
@@ -290,12 +294,14 @@ class AudioPlayer {
     new Audio("mixkit-long-pop-2358.wav"),
     new Audio("mixkit-bubble-pop-up-alert-notification-2357.wav"),
     new Audio("mixkit-dramatic-metal-explosion-impact-1687.wav"),
-    new Audio("mixkit-game-success-alert-2039.wav")
+    new Audio("mixkit-game-success-alert-2039.wav"),
+    new Audio("mixkit-spaceship-alarm-998.wav"),
   ];
 
   static #sourcesArray = [];
   static effectsVolume = null;
   static alarmVolume = null;
+  static finalAlarmVolume = null;
 
   static createAudioContext() {
     return new (window.AudioContext);
@@ -304,28 +310,38 @@ class AudioPlayer {
   static connectAudioNodes(audioContext) {
     this.effectsVolume = audioContext.createGain();
     this.alarmVolume = audioContext.createGain();
+    this.finalAlarmVolume = audioContext.createGain();
     this.effectsVolume.connect(audioContext.destination);
     this.alarmVolume.connect(audioContext.destination);
+    this.finalAlarmVolume.connect(audioContext.destination);
     for (let index = 0; index < this.#soundsArray.length; index++) {
       this.#sourcesArray.push(
         audioContext.createMediaElementSource(this.#soundsArray[index]));
       this.#sourcesArray[index].connect(audioContext.destination);
       if (index === 0) {
         this.#sourcesArray[index].connect(this.alarmVolume);
+      } else if (index === 6) {
+        this.#sourcesArray[index].connect(this.finalAlarmVolume);
       } else {
         this.#sourcesArray[index].connect(this.effectsVolume);
       }
     }
-    this.alarmVolume.gain.value = -0.7;
-    this.effectsVolume.gain.value = -0.7;
+    this.alarmVolume.gain.value = 0;
+    this.finalAlarmVolume.gain.value = 1;
+    this.effectsVolume.gain.value = 0;
   }
 
   static alarm(time, timer) {
-    if ((time[0] === 0) && (time[1] === this.#soundsArray[0].duration << 0)) {
+    if ((timer === 1) && (time[0] === 0) && 
+      (time[1] === this.#soundsArray[0].duration << 0)) {
       this.#soundsArray[0].play();
     }
-    if ((timer === 2)&&(time[0] === 0) && (time[1] === 59)) {
+    if ((timer === 2) && (time[0] === 0) && (time[1] === 59)) {
       this.#soundsArray[0].play();
+    }
+    if ((timer === 2) && (time[0] === 0) && 
+      (time[1] === this.#soundsArray[6].duration << 0)) {
+      this.#soundsArray[6].play();
     }
   }
 
@@ -351,6 +367,7 @@ class AudioPlayer {
 
   static resetAlarm() {
     this.#soundsArray[0].pause();
+    this.#soundsArray[6].pause();
   }
 }
 
@@ -381,8 +398,8 @@ class Pomodoro {
   #buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [0, 15];
-  #shortBreak = [0, 0];
+  #workTime = [0, 0];
+  #shortBreak = [1, 10];
   #longBreak = [0, 0];
   #timerSchedule = {
     1: this.#workTime,
@@ -405,14 +422,14 @@ class Pomodoro {
     Renderer.buttonEffects(this.#tryAgain);
     Renderer.buttonEffects(this.#closeButton);
     this.#startButton.addEventListener("click", () => {
+      Renderer.disableStartButton();
       if (!this.#buttonClicked) {
-        let audioContext = AudioPlayer.createAudioContext();
+        const audioContext = AudioPlayer.createAudioContext();
         AudioPlayer.connectAudioNodes(audioContext);
       }
       Renderer.idleClockFace(this.#round);
       AudioPlayer.resetAlarm();
       this.#currentTimer = 1;
-      Renderer.disableStartButton();
       if (this.#buttonClicked) {
         this.#timerWorker.terminate();
         this.#timerWorker = null;
@@ -474,8 +491,10 @@ class Pomodoro {
   #tryAgainButtonEvent() {
     this.#tryAgain.addEventListener("click", () => {
       AudioPlayer.buttonClick(this.isIos);
-      this.#tryAgain.style.background = "#424752";
-      this.#tryAgain.disabled = true;
+      this.#tryAgain.style.pointerEvents = "none";
+      setTimeout(() => {
+        this.#tryAgain.style.background = "#424752";
+      }, 30);
       setTimeout(() => {
         location.reload();
       }, 500);
@@ -507,7 +526,10 @@ class Pomodoro {
     Renderer.endGameMessage(false, this.#tomatoArray.length);
     this.#closeButton.addEventListener("click", () => {
       AudioPlayer.buttonClick(this.isIos);
-      this.#closeButton.style.background = "#424752";
+      this.#closeButton.style.pointerEvents = "none";
+      setTimeout(() => {
+        this.#closeButton.style.background = "#424752";
+      }, 30);
       setTimeout(() => {
         document.body.innerHTML = "";
       }, 500);
@@ -528,5 +550,5 @@ class Pomodoro {
   }
 }
 
-let pomodoro = new Pomodoro();
+const pomodoro = new Pomodoro();
 pomodoro.loop();
