@@ -1,6 +1,6 @@
 "use strict";
 
-// Renderer class holds methods for updating and animating user inteface elements
+// Renderer class holds methods for updating and animating user interface elements
 
 class Renderer {
   static #tab = document.getElementById("tab");
@@ -180,7 +180,7 @@ class Renderer {
     return tomato;
   }
 
-  static updateInfoDisplay(message, currentTimer, pomodoroJustRecieved) {
+  static updateInfoDisplay(message, currentTimer, pomodoroJustReceived) {
     const previousText = this.#infoDisplay.textContent;
     if (message === null) {
       this.#infoDisplay.textContent = "Press start to begin ✨";
@@ -198,7 +198,7 @@ class Renderer {
     if ((currentTimer === 2) && (message[0] < 1)) {
       this.#infoDisplay.textContent = "Time is running out 🔥";
     }
-    if (pomodoroJustRecieved) {
+    if (pomodoroJustReceived) {
       this.#infoDisplay.textContent = "+1 🍅";
     }
     const textNow = this.#infoDisplay.textContent;
@@ -247,7 +247,7 @@ class Renderer {
     textAppear();
   }
 
-  static gameOverTakeAwayTomatos(amount) {
+  static gameOverTakeAwayTomatoes(amount) {
     let timeOut = 0;
     for (let i = amount; i >= 1; i--) {
       timeOut += 700;
@@ -289,13 +289,13 @@ as well as provide volume control */
 
 class AudioPlayer {
   static #soundsArray = [
-    new Audio("alert1.wav"),
-    new Audio("mixkit-mouse-click-close-1113.wav"),
-    new Audio("mixkit-long-pop-2358.wav"),
-    new Audio("mixkit-bubble-pop-up-alert-notification-2357.wav"),
-    new Audio("mixkit-dramatic-metal-explosion-impact-1687.wav"),
-    new Audio("mixkit-game-success-alert-2039.wav"),
-    new Audio("mixkit-spaceship-alarm-998.wav"),
+    new Audio("sounds/mixkit-sound-alert-in-hall-1006.wav"),
+    new Audio("sounds/mixkit-mouse-click-close-1113.wav"),
+    new Audio("sounds/mixkit-long-pop-2358.wav"),
+    new Audio("sounds/mixkit-bubble-pop-up-alert-notification-2357.wav"),
+    new Audio("sounds/mixkit-dramatic-metal-explosion-impact-1687.wav"),
+    new Audio("sounds/mixkit-game-success-alert-2039.wav"),
+    new Audio("sounds/mixkit-spaceship-alarm-998.wav"),
   ];
 
   static #sourcesArray = [];
@@ -409,8 +409,8 @@ class Pomodoro {
   #currentGameScore = 0;
   #tomatoArray = [];
   tomatoScore = 0;
-  #tomatosToWin = 7;
-  #pomodoroJustRecieved = false;
+  #tomatoesToWin = 7;
+  #pomodoroJustReceived = false;
 
   loop() {
     this.tomatoScore = Utility.loadProgress();
@@ -442,7 +442,7 @@ class Pomodoro {
         this.#addTomatoToArray(this.#round);
         Renderer.updateTomatoScore(this.tomatoScore);
         Renderer.updateTomatoArray(this.#currentGameScore);
-        this.#checkIfAllTomatosGathered(this.#tomatoArray);
+        this.#checkIfAllTomatoesGathered(this.#tomatoArray);
         this.#round++;
         this.#checkForLongBreak(this.#round);
         this.#timerWorker.onmessage = function handler(event){
@@ -463,7 +463,7 @@ class Pomodoro {
             Renderer.updateClockColor(event.data, pomodoro.#currentTimer);
             Renderer.updateClockFace(event.data);
             Renderer.updateInfoDisplay(event.data, pomodoro.#currentTimer,
-              pomodoro.#pomodoroJustRecieved);
+              pomodoro.#pomodoroJustReceived);
             AudioPlayer.alarm(event.data, pomodoro.#currentTimer);
           }
         };
@@ -478,7 +478,7 @@ class Pomodoro {
     AudioPlayer.gameOverSound();
     const length = this.#tomatoArray.length;
     this.#round = 0;
-    Renderer.gameOverTakeAwayTomatos(length);
+    Renderer.gameOverTakeAwayTomatoes(length);
     Renderer.endGameMessage(true, this.#tomatoArray.length);
     this.tomatoScore -= this.#tomatoArray.length;
     this.#tomatoArray.length = 0;
@@ -509,8 +509,8 @@ class Pomodoro {
     }
   }
 
-  #checkIfAllTomatosGathered(tomatoArray) {
-    if (tomatoArray.length === this.#tomatosToWin) {
+  #checkIfAllTomatoesGathered(tomatoArray) {
+    if (tomatoArray.length === this.#tomatoesToWin) {
       this.#gameWon();
     }
   }
@@ -541,9 +541,9 @@ class Pomodoro {
       this.#tomatoArray.push("🍅");
       this.tomatoScore++;
       this.#currentGameScore++;
-      this.#pomodoroJustRecieved = true;
+      this.#pomodoroJustReceived = true;
       setTimeout(() => {
-        this.#pomodoroJustRecieved = false;
+        this.#pomodoroJustReceived = false;
       }, 4000);
       Utility.saveProgress(this.tomatoScore);
     }

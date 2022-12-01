@@ -1,7 +1,7 @@
 "use strict";
 
-/* Accurate timer with low pollong rate, using a web worker thread 
-to avoind throttling and performance.now() for time calculation */
+/* Accurate timer with low polling rate, using a web worker thread 
+to avoid throttling and performance.now() for time calculation */
 
 class Timer {
   #minutes = null;
