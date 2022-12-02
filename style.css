@@ -20,14 +20,13 @@ body {
 }
 
 .pomodoro {
-  padding: 1.4%;
-  border: 0.5px solid #555a61;
+  border: 0.5px solid #555a61a9;
   background: #25282e;
   display: flex;
   flex-direction: column;
   border-radius: 1.7rem;
-  width: 42rem;
-  height: 60rem;
+  width: 41rem;
+  height: 59rem;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -36,24 +35,23 @@ body {
 header {
   display: flex;
   margin-left: 1rem;
-  margin-top: 9.3%;
-
+  margin-top: 4rem;
 }
 
 header img {
-  margin-bottom: 1.7rem;
+  margin-bottom: 2rem;
   margin-right: 1.3rem;
 }
 
 .header h1 {
-  margin-top: 0.6rem;
+  margin-top: 0.8rem;
   margin-right: 3.5rem;
   color: #a4a6aa;
   font-size: 3.7rem;
 }
 
 .info-display {
-  margin-top: 6.5%;
+  margin-top: 2.7rem;
   font-size: 1.6rem;
   padding-left: 3rem;
   padding-right: 3rem;
@@ -63,7 +61,7 @@ header img {
 }
 
 .clock-face {
-  margin-top: 5.3%;
+  margin-top: 1.8rem;
   color: tomato;
   font-size: 12rem;
 }
@@ -81,11 +79,13 @@ header img {
   background-color: rgb(157, 207, 83);
 }
 
-button {
-  margin-top: 15%;
+button:not(.settings, .close-menu, .apply-settings) {
+  margin-top: 4.3rem;
   color: #25282e;
   font-family: 'Arial Rounded MT Bold', sans-serif;
   font-size: 2rem;
+  min-height: 8rem;
+  min-width: 8rem;
   height: 8rem;
   width: 8rem;
   border-radius: 50%;
@@ -94,15 +94,60 @@ button {
   cursor: default;
 }
 
-button:active {
+button:active:not(.settings, .close-menu, .apply-settings) {
+  min-height: initial;
+  min-width: initial;
   width: 7.9rem;
   height: 7.9rem;
   font-size: 1.95rem;
   margin-bottom: 0.1rem;
 }
 
-button:disabled {
+button:disabled:not(.settings, .close-menu, .apply-settings) {
   pointer-events: none;
+}
+
+.settings {
+  background-color: transparent;
+  background: none;
+  border: none;
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  font-size: 1.6rem;
+  color: #a4a6aa;
+  height: 2rem;
+  margin-top: 6.5rem;
+  margin-left: 4.7rem;
+}
+
+.settings-menu {
+  position: absolute;
+  margin-top: 10.5rem;
+  width: 40rem;
+  height: 44rem;
+  z-index: 100;
+  border: #555a61a9 solid 0.5px;
+  background-color: #2a2d34;
+  border-radius: 1.7rem;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.close-menu {
+  border: 0.1rem solid #a4a6aa;
+  border-radius: 50%;
+  background: none;
+  font-size: 1.6rem;
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  color: #a4a6aa;
+  right: 3%;
+  top: 3%;
+  width: 2.3rem;
+  height: 2.3rem;
+  position: absolute;
+  line-height: 0;
+  padding-bottom: 0.19rem;
 }
 
 #try-again {
@@ -119,9 +164,9 @@ button:disabled {
 }
 
 .game-score {
+  margin-top: 4.5rem;
   color: #a4a6aa;
-  margin-left: 4.3rem;
-  margin-top: 9%;
+  margin-left: 4rem;
   display: flex;
   align-self: flex-start;
 }
@@ -129,7 +174,6 @@ button:disabled {
 .score-tomato {
   width: 1.6rem;
   margin-right: 0.6rem;
-  margin-bottom: 4rem;
 }
 
 .array-tomato {
@@ -139,22 +183,112 @@ button:disabled {
 }
 
 .total-score {
+  align-items: center;
+  justify-content: center;
   display: flex;
-  margin-top: 12%;
   width: 9rem;
   font-size: 1.5rem;
+  margin-bottom: 1.9rem;
 }
 
 .pomodoro-array {
-  margin-left: 0.5rem;
+  margin-left: 1.2rem;
   width: 12rem;
   font-size: 2rem;
+}
+
+.timers {
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  color: #a4a6aa;
+  display: flex;
+  flex-direction: row;
+  margin-top: 3rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-label {
+  font-size: 1.4rem;
+  align-self: center;
+  margin-bottom: 0.5rem;
+}
+
+.timer-input {
+  display: flex;
+}
+
+.timer-input p {
+  font-size: 2.4rem;
+  margin-top: 0.7rem;
+  color: #a4a6aa;
+}
+
+.time-input {
+  margin-top: 0.5rem;
+  padding-left: 0.6rem;
+  width: 4.5rem;
+  height: 3.6rem;
+  font-size: 3rem;
+  background: none;
+  border: none;
+  color: rgb(157, 207, 83);
+  border-bottom: 0.1rem solid #a4a6aa;
+  outline: none;
+}
+
+.time-input::placeholder {
+  color: rgb(157, 207, 83);
+  font-size: 3rem;
+}
+
+.input-time {
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 @media screen and (max-width:420px) {
   .pomodoro {
     width: 99.5%;
     height: 99.5%;
+  }
+  .game-score {
+    margin-left: 9%;
+  }
+  .settings {
+    position: absolute;
+    right: 7%;
+    bottom: 3%;
+  }
+
+  .settings-menu {
+    margin-top: 39%;
+    width: 95%;
+    height: 69%;
+  }
+
+  .close-menu {
+    margin-top: auto;
+    right: 4%;
+  }
+
+  button:not(.settings, .close-menu) {
+    margin-top: 17%;
+  }
+  .game-score {
+    margin-top: 21%;
+  }
+  .total-score {
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+    align-items:initial;
+    justify-content: initial;
+  }
+  .score-tomato {
+    margin-bottom: auto;
+  }
+  .pomodoro-array {
+    margin-left: -0.5rem;
   }
 }
 
@@ -176,11 +310,8 @@ button:disabled {
   .time-bar-container {
     width: 85%;
   }
-  button {
-    margin-top: 27%;
-  }
-  .game-score {
-    margin-top: 22%;
+  button:not(.settings, .close-menu, .apply-settings) {
+    margin-top: 17%;
   }
 }
 
@@ -323,4 +454,3 @@ button:disabled {
     margin-top: 17%;
   }
 }
-

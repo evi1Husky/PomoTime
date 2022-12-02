@@ -34,6 +34,44 @@
       </p>
       <p class="pomodoro-array">
       </p>
+      <button class="settings">Settings</button>
+    </div>
+    <div class="settings-menu">
+      <button class="close-menu">x</button>
+        <div class="timers">
+          <div class="input-time">
+            <label class="timer-label" for="time-input">Work Time</label>
+            <div class="timer-input">
+              <input type="text" class="time-input" id="work-minutes"
+                placeholder="00"/>
+              <p>:</p>
+              <input type="text" class="time-input" id="work-seconds"
+                placeholder="00"/>
+            </div>
+          </div>
+          <div class="input-time">
+            <label class="timer-label" for="time-input">Short Break</label>
+            <div class="timer-input">
+              <input type="text" class="time-input" id="work-minutes"
+                placeholder="00"/>
+              <p>:</p>
+              <input type="text" class="time-input" id="work-seconds"
+                placeholder="00"/>
+            </div>
+          </div>
+          <div class="input-time">
+            <label class="timer-label" for="time-input">Long Break</label>
+            <div class="timer-input">
+              <input type="text" class="time-input" id="work-minutes"
+                placeholder="00"/>
+              <p>:</p>
+              <input type="text" class="time-input" id="work-seconds"
+                placeholder="00"/>
+            </div>
+          </div>
+        </div>
+        <!-- <button class="apply-settings">Apply</button> -->
+      </form>
     </div>
   </main>
   <script src="timerWorker.js"></script>

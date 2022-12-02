@@ -296,6 +296,7 @@ class AudioPlayer {
     new Audio("sounds/mixkit-dramatic-metal-explosion-impact-1687.wav"),
     new Audio("sounds/mixkit-game-success-alert-2039.wav"),
     new Audio("sounds/mixkit-spaceship-alarm-998.wav"),
+    new Audio("sounds/mixkit-clear-mouse-clicks-2997.wav"),
   ];
 
   static #sourcesArray = [];
@@ -365,6 +366,10 @@ class AudioPlayer {
     this.#soundsArray[5].play();
   }
 
+  static settingsClick() {
+    this.#soundsArray[7].play();
+  }
+
   static resetAlarm() {
     this.#soundsArray[0].pause();
     this.#soundsArray[6].pause();
@@ -388,6 +393,92 @@ class Utility {
   }
 }
 
+//Settings menu
+
+class Settings {
+  static #settingsButton = document.querySelector(".settings");
+  static #settingsMenu = document.querySelector(".settings-menu");
+  static #closeMenu = document.querySelector(".close-menu");
+
+  static init() {
+    this.#settingsButtonEvent(this.#settingsButton);
+    this.#closeButtonEvent(this.#closeMenu);
+  }
+
+  static #settingsButtonEvent(button) {
+    button.addEventListener("mouseover", () => {
+      button.style.color = "rgb(157, 207, 83)";
+      button.style.transition = "0s";
+    });
+    button.addEventListener("mouseleave", () => {
+      button.style.color = "#a4a6aa";
+      button.style.transition = "1.3s";
+    });
+    button.addEventListener("touchstart", () => {
+      button.style.color = "rgb(157, 207, 83)";
+    });
+    button.addEventListener("touchend", () => {
+      button.style.color = "#a4a6aa";
+      button.style.transition = "1.3s";
+    });
+    button.addEventListener("click", () => {
+      button.style.color = "tomato";
+      button.style.transition = "0s";
+      button.disabled = true;
+      AudioPlayer.settingsClick();
+      setTimeout(() => {
+        button.style.color = "rgb(157, 207, 83)";
+      }, 120);
+      const style = getComputedStyle(this.#settingsMenu);
+      setTimeout(() => {
+        if (style.display === "none") {
+          this.#settingsMenu.style.display = "flex";
+        } else {
+          this.#settingsMenu.style.display = "none";
+        }
+        setTimeout(() => {
+          button.disabled = false;
+        }, 500);
+      }, 190);
+    });
+  }
+  static #closeButtonEvent(button) {
+    button.addEventListener("mouseover", () => {
+      button.style.color = "#25282e";
+      button.style.borderColor = "tomato";
+      button.style.backgroundColor = "tomato";
+    });
+    button.addEventListener("mouseleave", () => {
+      button.style.color = "#a4a6aa";
+      button.style.borderColor = "#a4a6aa";
+      button.style.backgroundColor = "#ffffff00";
+    });
+    button.addEventListener("touchstart", () => {
+      button.style.color = "#25282e";
+      button.style.borderColor = "tomato";
+      button.style.backgroundColor = "tomato";
+    });
+    button.addEventListener("touchend", () => {
+      button.style.color = "#a4a6aa";
+      button.style.borderColor = "#a4a6aa";
+      button.style.backgroundColor = "#ffffff00";
+    });
+    button.addEventListener("click", () => {
+      button.style.backgroundColor = "rgb(157, 207, 83)";
+      button.style.borderColor = "rgb(157, 207, 83)";
+      AudioPlayer.settingsClick();
+      const style = getComputedStyle(this.#settingsMenu);
+      setTimeout(() => {
+        if (style.display === "none") {
+          this.#settingsMenu.style.display = "flex";
+        } else {
+          this.#settingsMenu.style.display = "none";
+        }    
+      }, 190);
+    });
+  }
+}
+
 // Main app class featuring game loop and logic
 
 class Pomodoro {
@@ -401,6 +492,7 @@ class Pomodoro {
   #workTime = [0, 0];
   #shortBreak = [1, 10];
   #longBreak = [0, 0];
+  #tomatoesToWin = 18;
   #timerSchedule = {
     1: this.#workTime,
     2: this.#shortBreak,
@@ -409,10 +501,10 @@ class Pomodoro {
   #currentGameScore = 0;
   #tomatoArray = [];
   tomatoScore = 0;
-  #tomatoesToWin = 7;
   #pomodoroJustReceived = false;
 
   loop() {
+    Settings.init();
     this.tomatoScore = Utility.loadProgress();
     Renderer.updateTomatoScore(this.tomatoScore);
     Renderer.updateInfoDisplay(null, null);
