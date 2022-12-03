@@ -101,7 +101,11 @@ class Renderer {
 
   static buttonEffects(button) {
     button.addEventListener("mouseover", () => {
-      button.style.background = "tomato";
+      if (button.id === "apply-settings") {
+        button.style.background = "rgb(157, 207, 83)";
+      } else {
+        button.style.background = "tomato";
+      }
     });
     button.addEventListener("mouseleave", () => {
       if (button.id === "start") {
@@ -111,7 +115,11 @@ class Renderer {
       }
     });
     button.addEventListener("touchstart", () => {
-      button.style.background = "tomato";
+      if (button.id === "apply-settings") {
+        button.style.background = "rgb(157, 207, 83)";
+      } else {
+        button.style.background = "tomato";
+      }
     });
     button.addEventListener("touchend", () => {
       if (button.id === "start") {
@@ -391,6 +399,28 @@ class Utility {
       return 0;
     }
   }
+
+  static saveSettings() {
+    localStorage.setItem("workMinutes", Settings.workTime[0]);
+    localStorage.setItem("workSeconds", Settings.workTime[1]);
+    localStorage.setItem("shortBreakMinutes", Settings.shortBreak[0]);
+    localStorage.setItem("shortBreakSeconds", Settings.shortBreak[1]);
+    localStorage.setItem("longBreakMinutes", Settings.longBreak[0]);
+    localStorage.setItem("longBreakSeconds", Settings.longBreak[1]);
+  }
+
+  static loadSettings() {
+    if ("workMinutes" in localStorage) {
+      pomodoro.workTime[0] = Number(localStorage.getItem("workMinutes"));
+      pomodoro.workTime[1] = Number(localStorage.getItem("workSeconds"));
+      pomodoro.shortBreak[0] = Number(localStorage.getItem("shortBreakMinutes"));
+      pomodoro.shortBreak[1] = Number(localStorage.getItem("shortBreakSeconds"));
+      pomodoro.longBreak[0] = Number(localStorage.getItem("longBreakMinutes"));
+      pomodoro.longBreak[1] = Number(localStorage.getItem("longBreakSeconds"));
+      pomodoro.timerSchedule[1] = pomodoro.workTime;
+      pomodoro.timerSchedule[2] = pomodoro.shortBreak;
+    }
+  }
 }
 
 //Settings menu
@@ -399,12 +429,135 @@ class Settings {
   static #settingsButton = document.querySelector(".settings");
   static #settingsMenu = document.querySelector(".settings-menu");
   static #closeMenu = document.querySelector(".close-menu");
+  static #applySettingsButton = document.querySelector(".apply-settings");
+
+  static #inputForms = [
+    document.getElementById("work-minutes"),
+    document.getElementById("work-seconds"),
+    document.getElementById("short-break-minutes"),
+    document.getElementById("short-break-seconds"),
+    document.getElementById("long-break-minutes"),
+    document.getElementById("long-break-seconds"),
+  ];
+
+  static workTime = [];
+  static shortBreak = [];
+  static longBreak = [];
 
   static init() {
     this.#settingsButtonEvent(this.#settingsButton);
     this.#closeButtonEvent(this.#closeMenu);
+    Renderer.buttonEffects(this.#applySettingsButton);
+    this.#applySettingsButtonEvent(this.#applySettingsButton);
+    this.#timeInputEvents();
   }
 
+  static #formInputCallback(event, form, formNumber) {
+    if (this.#validateInput(event.data, form.value.length)) {
+      switch (formNumber) {
+      case 1:
+        this.workTime[0] = parseInt(Number(form.value));
+        break;
+      case 2:
+        this.workTime[1] = parseInt(Number(form.value));
+        break;
+      case 3:
+        this.shortBreak[0] = parseInt(Number(form.value));
+        break;
+      case 4:
+        this.shortBreak[1] = parseInt(Number(form.value));
+        break;
+      case 5:
+        this.longBreak[0] = parseInt(Number(form.value));
+        break;
+      case 6:
+        this.longBreak[1] = parseInt(Number(form.value));
+        break;
+      }
+    } else {
+      this.#replaceInvalidValues(form);
+    }
+  }
+
+  static #timeInputEvents() {
+    for (let index = 0; index < this.#inputForms.length; index++) {
+      this.#inputForms[index].addEventListener("input", (event) => {
+        this.#formInputCallback(event, this.#inputForms[index], index + 1);
+      });
+    }
+    this.#settingsMenu.addEventListener("click", () => {
+      for (let index = 0; index < this.#inputForms.length; index++) {
+        this.#formatFormValue(this.#inputForms[index]);
+      }
+    });
+  }
+
+  static #validateInput(input, length) {
+    if ((typeof Number(input) === "number") && 
+      (length === 1 && Number(input) <= 5) ||
+      (length === 2 && Number(input) <= 9) ||
+      (length === 0)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static #formatFormValue(form) {
+    if (Number(form.value < 10) && 
+        (form.value.length === 1)) {
+      form.value = "0" + form.value;
+    }
+  }
+
+  static #replaceInvalidValues(input) {
+    input.value = 0;
+  }
+
+  static #applySettings() {
+    pomodoro.workTime = this.workTime;
+    pomodoro.timerSchedule[1] = this.workTime;
+    if (!pomodoro.buttonClicked) {
+      Renderer.updateClockFace(this.workTime);
+    }
+    pomodoro.shortBreak = this.shortBreak;
+    pomodoro.timerSchedule[2] = this.shortBreak;
+    pomodoro.longBreak = this.longBreak;
+  }
+
+  static #applySettingsButtonEvent(button) {
+    button.addEventListener("click", () => {
+      button.style.background = "tomato";
+      AudioPlayer.settingsClick();
+      setTimeout(() => {
+        button.style.background = "#424752";
+      }, 120);
+      setTimeout(() => {
+        this.#applySettings();
+        Utility.saveSettings();
+        this.#settingsMenu.style.display = "none";
+      }, 500);
+    });
+  }
+
+  static #setInitialValues() {
+    this.#inputForms[0].value = pomodoro.workTime[0];
+    this.#inputForms[1].value = pomodoro.workTime[1];
+    this.workTime = pomodoro.workTime;
+    this.#formatFormValue(this.#inputForms[0]);
+    this.#formatFormValue(this.#inputForms[1]);
+    this.#inputForms[2].value = pomodoro.shortBreak[0];
+    this.#inputForms[3].value = pomodoro.shortBreak[1];
+    this.shortBreak = pomodoro.shortBreak;
+    this.#formatFormValue(this.#inputForms[2]);
+    this.#formatFormValue(this.#inputForms[3]);
+    this.#inputForms[4].value = pomodoro.longBreak[0];
+    this.#inputForms[5].value = pomodoro.longBreak[1];
+    this.longBreak = pomodoro.longBreak;
+    this.#formatFormValue(this.#inputForms[4]);
+    this.#formatFormValue(this.#inputForms[5]);
+  }
+ 
   static #settingsButtonEvent(button) {
     button.addEventListener("mouseover", () => {
       button.style.color = "rgb(157, 207, 83)";
@@ -433,15 +586,17 @@ class Settings {
       setTimeout(() => {
         if (style.display === "none") {
           this.#settingsMenu.style.display = "flex";
+          this.#setInitialValues();
         } else {
           this.#settingsMenu.style.display = "none";
         }
         setTimeout(() => {
           button.disabled = false;
         }, 500);
-      }, 190);
+      }, 200);
     });
   }
+
   static #closeButtonEvent(button) {
     button.addEventListener("mouseover", () => {
       button.style.color = "#25282e";
@@ -474,7 +629,7 @@ class Settings {
         } else {
           this.#settingsMenu.style.display = "none";
         }    
-      }, 190);
+      }, 200);
     });
   }
 }
@@ -486,16 +641,16 @@ class Pomodoro {
   #tryAgain = document.getElementById("try-again");
   #closeButton = document.getElementById("close");
   #timerWorker = new Worker("timerWorker.js");
-  #buttonClicked = false;
+  buttonClicked = false;
   #setTimeOut = 0;
   #currentTimer = 1;
-  #workTime = [0, 0];
-  #shortBreak = [1, 10];
-  #longBreak = [0, 0];
+  workTime = [25, 0];
+  shortBreak = [5, 0];
+  longBreak = [15, 0];
   #tomatoesToWin = 18;
-  #timerSchedule = {
-    1: this.#workTime,
-    2: this.#shortBreak,
+  timerSchedule = {
+    1: this.workTime,
+    2: this.shortBreak,
   };
   #round = 0;
   #currentGameScore = 0;
@@ -505,24 +660,25 @@ class Pomodoro {
 
   loop() {
     Settings.init();
+    Utility.loadSettings();
     this.tomatoScore = Utility.loadProgress();
     Renderer.updateTomatoScore(this.tomatoScore);
     Renderer.updateInfoDisplay(null, null);
-    Renderer.updateClockFace(this.#timerSchedule[this.#currentTimer]);
+    Renderer.updateClockFace(this.workTime);
     Renderer.updateTab("PomoTime");
     Renderer.buttonEffects(this.#startButton);
     Renderer.buttonEffects(this.#tryAgain);
     Renderer.buttonEffects(this.#closeButton);
     this.#startButton.addEventListener("click", () => {
       Renderer.disableStartButton();
-      if (!this.#buttonClicked) {
+      if (!this.buttonClicked) {
         const audioContext = AudioPlayer.createAudioContext();
         AudioPlayer.connectAudioNodes(audioContext);
       }
       Renderer.idleClockFace(this.#round);
       AudioPlayer.resetAlarm();
       this.#currentTimer = 1;
-      if (this.#buttonClicked) {
+      if (this.buttonClicked) {
         this.#timerWorker.terminate();
         this.#timerWorker = null;
         this.#timerWorker = new Worker("timerWorker.js");
@@ -530,7 +686,7 @@ class Pomodoro {
       }
       AudioPlayer.buttonClick();
       setTimeout(() => {
-        this.#buttonClicked = true;
+        this.buttonClicked = true;
         this.#addTomatoToArray(this.#round);
         Renderer.updateTomatoScore(this.tomatoScore);
         Renderer.updateTomatoArray(this.#currentGameScore);
@@ -550,7 +706,7 @@ class Pomodoro {
               break;
             }
             pomodoro.#timerWorker.postMessage(
-              pomodoro.#timerSchedule[pomodoro.#currentTimer]);
+              pomodoro.timerSchedule[pomodoro.#currentTimer]);
           } else {
             Renderer.updateClockColor(event.data, pomodoro.#currentTimer);
             Renderer.updateClockFace(event.data);
@@ -559,7 +715,7 @@ class Pomodoro {
             AudioPlayer.alarm(event.data, pomodoro.#currentTimer);
           }
         };
-        this.#timerWorker.postMessage(this.#timerSchedule[this.#currentTimer]);
+        this.#timerWorker.postMessage(this.timerSchedule[this.#currentTimer]);
       }, this.#setTimeOut);
     });
   }
@@ -595,9 +751,9 @@ class Pomodoro {
 
   #checkForLongBreak(round) {
     if (round % 4 === 0) {
-      this.#timerSchedule[2] = this.#longBreak;
+      this.timerSchedule[2] = this.longBreak;
     } else {
-      this.#timerSchedule[2] = this.#shortBreak;
+      this.timerSchedule[2] = this.shortBreak;
     }
   }
 

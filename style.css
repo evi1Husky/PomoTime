@@ -107,49 +107,6 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   pointer-events: none;
 }
 
-.settings {
-  background-color: transparent;
-  background: none;
-  border: none;
-  font-family: 'Arial Rounded MT Bold', sans-serif;
-  font-size: 1.6rem;
-  color: #a4a6aa;
-  height: 2rem;
-  margin-top: 6.5rem;
-  margin-left: 4.7rem;
-}
-
-.settings-menu {
-  position: absolute;
-  margin-top: 10.5rem;
-  width: 40rem;
-  height: 44rem;
-  z-index: 100;
-  border: #555a61a9 solid 0.5px;
-  background-color: #2a2d34;
-  border-radius: 1.7rem;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.close-menu {
-  border: 0.1rem solid #a4a6aa;
-  border-radius: 50%;
-  background: none;
-  font-size: 1.6rem;
-  font-family: 'Arial Rounded MT Bold', sans-serif;
-  color: #a4a6aa;
-  right: 3%;
-  top: 3%;
-  width: 2.3rem;
-  height: 2.3rem;
-  position: absolute;
-  line-height: 0;
-  padding-bottom: 0.19rem;
-}
-
 #try-again {
   display: none;
   font-size: 1.89rem;
@@ -197,12 +154,70 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   font-size: 2rem;
 }
 
+.settings {
+  background-color: transparent;
+  background: none;
+  border: none;
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  font-size: 1.6rem;
+  color: #a4a6aa;
+  height: 2rem;
+  margin-top: 6.5rem;
+  margin-left: 4.7rem;
+}
+
+.settings-menu {
+  padding: 0.3rem;
+  position: absolute;
+  margin-top: 20rem;
+  width: 40rem;
+  height: 17rem;
+  z-index: 100;
+  border: #555a61a9 solid 0.5px;
+  background-color: #2a2d34;
+  border-radius: 1.7rem;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.close-menu {
+  margin-top: 0.9rem;
+  border: 0.1rem solid #a4a6aa;
+  border-radius: 50%;
+  background: none;
+  font-size: 1.6rem;
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  color: #a4a6aa;
+  right: 3%;
+  width: 2.3rem;
+  height: 2.3rem;
+  position: absolute;
+  line-height: 0;
+  padding-bottom: 0.19rem;
+}
+
+.apply-settings {
+  margin-top: 1rem;
+  margin-bottom: 1.4rem;
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  color: #25282e;
+  font-size: 1.6rem;
+  border-radius: 0.6rem;
+  width: 6rem;
+  border: none;
+  background: #a4a6aa;
+  height: 3.3rem;
+  padding-bottom: 0.3rem;
+}
+
 .timers {
   font-family: 'Arial Rounded MT Bold', sans-serif;
   color: #a4a6aa;
   display: flex;
   flex-direction: row;
-  margin-top: 3rem;
+  margin-top: 2.1rem;
   align-items: center;
   justify-content: center;
 }
@@ -210,7 +225,6 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
 .timer-label {
   font-size: 1.4rem;
   align-self: center;
-  margin-bottom: 0.5rem;
 }
 
 .timer-input {
@@ -262,14 +276,18 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   }
 
   .settings-menu {
-    margin-top: 39%;
+    margin-top: 70%;
     width: 95%;
-    height: 69%;
+    height: 16.7rem;
   }
 
   .close-menu {
-    margin-top: auto;
-    right: 4%;
+    margin-top: 0.4rem;
+    right: 0.8rem;
+  }
+
+  .apply-settings {
+    margin-top: 1.3rem !important; 
   }
 
   button:not(.settings, .close-menu) {
