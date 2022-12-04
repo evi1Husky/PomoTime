@@ -407,6 +407,8 @@ class Utility {
     localStorage.setItem("shortBreakSeconds", Settings.shortBreak[1]);
     localStorage.setItem("longBreakMinutes", Settings.longBreak[0]);
     localStorage.setItem("longBreakSeconds", Settings.longBreak[1]);
+    localStorage.setItem("tomatoesToWin", Settings.tomatoesToWin);
+    localStorage.setItem("longBreakFrequency", Settings.longBreakFrequency);
   }
 
   static loadSettings() {
@@ -419,6 +421,8 @@ class Utility {
       pomodoro.longBreak[1] = Number(localStorage.getItem("longBreakSeconds"));
       pomodoro.timerSchedule[1] = pomodoro.workTime;
       pomodoro.timerSchedule[2] = pomodoro.shortBreak;
+      pomodoro.tomatoesToWin = Number(localStorage.getItem("tomatoesToWin"));
+      pomodoro.longBreakFrequency = Number(localStorage.getItem("longBreakFrequency"));
     }
   }
 }
@@ -440,9 +444,14 @@ class Settings {
     document.getElementById("long-break-seconds"),
   ];
 
+  static #pomodoroInput = document.getElementById("pomodoros-to-complete");
+  static #longBreakInput = document.getElementById("long-break");
+
   static workTime = [];
   static shortBreak = [];
   static longBreak = [];
+  static tomatoesToWin = null;
+  static longBreakFrequency = null;
 
   static init() {
     this.#settingsButtonEvent(this.#settingsButton);
@@ -450,6 +459,54 @@ class Settings {
     Renderer.buttonEffects(this.#applySettingsButton);
     this.#applySettingsButtonEvent(this.#applySettingsButton);
     this.#timeInputEvents();
+    this.#pomodoroInputEvent();
+    this.#longBreakInputEvent();
+  }
+
+  static #pomodoroInputEvent() {
+    this.#pomodoroInput.addEventListener("input", () => {
+      this.tomatoesToWin = Number(this.#pomodoroInput.value);
+      if (this.#pomodoroInput.value > 30) {
+        this.#pomodoroInput.value = pomodoro.tomatoesToWin;
+        this.tomatoesToWin = pomodoro.tomatoesToWin;
+      } else if (this.#pomodoroInput.value < 0) {
+        this.#pomodoroInput.value = pomodoro.tomatoesToWin;
+        this.tomatoesToWin = pomodoro.tomatoesToWin;
+      } 
+      if (isNaN(this.tomatoesToWin)) {
+        this.#pomodoroInput.value = pomodoro.tomatoesToWin;
+        this.tomatoesToWin = pomodoro.tomatoesToWin;
+      }
+      if (this.#pomodoroInput.value === "0") {
+        this.tomatoesToWin = 2;
+      }
+      if (this.#pomodoroInput.value === "") {
+        this.tomatoesToWin = 2;
+      }
+    });
+  }
+
+  static #longBreakInputEvent() {
+    this.#longBreakInput.addEventListener("input", () => {
+      this.longBreakFrequency = Number(this.#longBreakInput.value);
+      if (this.#longBreakInput.value > 15) {
+        this.#longBreakInput.value = pomodoro.longBreakFrequency;
+        this.longBreakFrequency = pomodoro.longBreakFrequency;
+      } else if (this.#longBreakInput.value < 0) {
+        this.#longBreakInput.value = pomodoro.longBreakFrequency;
+        this.longBreakFrequency = pomodoro.longBreakFrequency;
+      } 
+      if (isNaN(this.longBreakFrequency)) {
+        this.#longBreakInput.value = pomodoro.longBreakFrequency;
+        this.longBreakFrequency = pomodoro.longBreakFrequency;
+      }
+      if (this.#longBreakInput.value === "0") {
+        this.longBreakFrequency = 2;
+      }
+      if (this.#longBreakInput.value === "") {
+        this.longBreakFrequency = 2;
+      }
+    });
   }
 
   static #formInputCallback(event, form, formNumber) {
@@ -486,6 +543,8 @@ class Settings {
       });
     }
     this.#settingsMenu.addEventListener("click", () => {
+      this.#pomodoroInput.value = this.tomatoesToWin;
+      this.#longBreakInput.value = this.longBreakFrequency;
       for (let index = 0; index < this.#inputForms.length; index++) {
         this.#formatFormValue(this.#inputForms[index]);
       }
@@ -523,6 +582,8 @@ class Settings {
     pomodoro.shortBreak = this.shortBreak;
     pomodoro.timerSchedule[2] = this.shortBreak;
     pomodoro.longBreak = this.longBreak;
+    pomodoro.tomatoesToWin = this.tomatoesToWin;
+    pomodoro.longBreakFrequency = this.longBreakFrequency;
   }
 
   static #applySettingsButtonEvent(button) {
@@ -556,6 +617,10 @@ class Settings {
     this.longBreak = pomodoro.longBreak;
     this.#formatFormValue(this.#inputForms[4]);
     this.#formatFormValue(this.#inputForms[5]);
+    this.tomatoesToWin = pomodoro.tomatoesToWin;
+    this.longBreakFrequency = pomodoro.longBreakFrequency;
+    this.#pomodoroInput.value = pomodoro.tomatoesToWin;
+    this.#longBreakInput.value = pomodoro.longBreakFrequency;
   }
  
   static #settingsButtonEvent(button) {
@@ -647,7 +712,8 @@ class Pomodoro {
   workTime = [25, 0];
   shortBreak = [5, 0];
   longBreak = [15, 0];
-  #tomatoesToWin = 18;
+  tomatoesToWin = 18;
+  longBreakFrequency = 4;
   timerSchedule = {
     1: this.workTime,
     2: this.shortBreak,
@@ -750,7 +816,7 @@ class Pomodoro {
   }
 
   #checkForLongBreak(round) {
-    if (round % 4 === 0) {
+    if (round % this.longBreakFrequency === 0) {
       this.timerSchedule[2] = this.longBreak;
     } else {
       this.timerSchedule[2] = this.shortBreak;
@@ -758,7 +824,7 @@ class Pomodoro {
   }
 
   #checkIfAllTomatoesGathered(tomatoArray) {
-    if (tomatoArray.length === this.#tomatoesToWin) {
+    if (tomatoArray.length === this.tomatoesToWin) {
       this.#gameWon();
     }
   }

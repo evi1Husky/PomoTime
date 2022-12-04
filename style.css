@@ -171,7 +171,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   position: absolute;
   margin-top: 20rem;
   width: 40rem;
-  height: 17rem;
+  height: 25rem;
   z-index: 100;
   border: #555a61a9 solid 0.5px;
   background-color: #2a2d34;
@@ -199,7 +199,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
 }
 
 .apply-settings {
-  margin-top: 1rem;
+  margin-top: 2rem;
   margin-bottom: 1.4rem;
   font-family: 'Arial Rounded MT Bold', sans-serif;
   color: #25282e;
@@ -212,7 +212,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   padding-bottom: 0.3rem;
 }
 
-.timers {
+.timers, .number-input-form {
   font-family: 'Arial Rounded MT Bold', sans-serif;
   color: #a4a6aa;
   display: flex;
@@ -222,7 +222,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   justify-content: center;
 }
 
-.timer-label {
+.timer-label, .number-input-label {
   font-size: 1.4rem;
   align-self: center;
 }
@@ -237,7 +237,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   color: #a4a6aa;
 }
 
-.time-input {
+.time-input, .number-input {
   margin-top: 0.5rem;
   padding-left: 0.6rem;
   width: 4.5rem;
@@ -250,7 +250,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   outline: none;
 }
 
-.time-input::placeholder {
+.time-input::placeholder, .number-input::placeholder {
   color: rgb(157, 207, 83);
   font-size: 3rem;
 }
@@ -259,6 +259,40 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   margin: 1rem;
   display: flex;
   flex-direction: column;
+}
+
+input[type='number'] {
+  -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.number-input-form {
+  margin-top: 0.8rem;
+}
+
+.number-input {
+  width: 6rem;
+  text-align: center;
+  padding-right: 1rem;
+}
+
+.number-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.number-input-container:nth-child(1) {
+  margin-right: 3rem;
+}
+
+.number-input-container:nth-child(2) {
+  margin-left: 3rem;
 }
 
 @media screen and (max-width:420px) {
