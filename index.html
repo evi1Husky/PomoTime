@@ -91,7 +91,21 @@
             Alarm volume
           </label>
           <input type="range" id="alarm-volume-range" class="volume-range"
-            min="-1" max="1" value="0" step="0.1">
+            min="-1" max="1" value="0" step="0.01">
+        </div>
+        <div class="final-alarm-volume">
+          <label class="volume-range-label" for="final-alarm-volume-range">
+            Final alarm volume
+          </label>
+          <input type="range" id="final-alarm-volume-range" class="volume-range"
+            min="-1" max="1" value="0" step="0.01">
+        </div>
+        <div class="effects-volume">
+          <label class="volume-range-label" for="effects-volume-range">
+            Effects volume
+          </label>
+          <input type="range" id="effects-volume-range" class="volume-range"
+            min="-1" max="1" value="0" step="0.01">
         </div>
         <button class="apply-settings" id="apply-settings">Apply</button>
       </form>

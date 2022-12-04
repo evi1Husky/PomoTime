@@ -171,7 +171,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   position: absolute;
   margin-top: 13rem;
   width: 40rem;
-  height: 35rem;
+  height: 40.2rem;
   z-index: 100;
   border: #555a61a9 solid 0.5px;
   background-color: #2a2d34;
@@ -199,7 +199,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
 }
 
 .apply-settings {
-  margin-top: 2rem;
+  margin-top: 2.3rem;
   margin-bottom: 1.4rem;
   font-family: 'Arial Rounded MT Bold', sans-serif;
   color: #25282e;
@@ -286,7 +286,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   margin-left: 3rem;
 }
 
-.alarm-volume {
+.alarm-volume, .final-alarm-volume, .effects-volume {
   margin-top: 1.8rem;
   display: flex;
   flex-direction: column;
@@ -336,9 +336,11 @@ input[type="range"]::-moz-range-thumb {
     width: 99.5%;
     height: 99.5%;
   }
+  
   .game-score {
     margin-left: 9%;
   }
+
   .settings {
     position: absolute;
     right: 7%;
@@ -346,9 +348,9 @@ input[type="range"]::-moz-range-thumb {
   }
 
   .settings-menu {
-    margin-top: 70%;
+    margin-top: 50%;
     width: 95%;
-    height: 25rem;
+    height: 40.1rem;
   }
 
   .close-menu {
@@ -357,24 +359,28 @@ input[type="range"]::-moz-range-thumb {
   }
 
   .apply-settings {
-    margin-top: 3rem !important; 
+    margin-top: 2.3rem !important; 
   }
 
   button:not(.settings, .close-menu) {
     margin-top: 17%;
   }
+
   .game-score {
     margin-top: 21%;
   }
+
   .total-score {
     margin-left: 0.5rem;
     margin-top: 0.5rem;
     align-items:initial;
     justify-content: initial;
   }
+
   .score-tomato {
     margin-bottom: auto;
   }
+
   .pomodoro-array {
     margin-left: -0.5rem;
   }
@@ -384,20 +390,25 @@ input[type="range"]::-moz-range-thumb {
   .header {
     margin-top: 23%;
   }
+
   .info-display {
     margin-top: 16%;
     font-size: 2rem;
   }
+
   .header h1 {
     font-size: 4rem;
   }
+
   .clock-face {
     font-size: 13rem;
     margin-top: 16%;
   }
+
   .time-bar-container {
     width: 85%;
   }
+
   button:not(.settings, .close-menu, .apply-settings) {
     margin-top: 17%;
   }
@@ -407,6 +418,7 @@ input[type="range"]::-moz-range-thumb {
   .header {
     margin-top: 20%;
   }
+
   .clock-face {
     font-size: 12.5rem;
     margin-top: 16%;
@@ -417,20 +429,25 @@ input[type="range"]::-moz-range-thumb {
   .header {
     margin-top: 18%;
   }
+
   .clock-face {
     font-size: 14rem;
     margin-top: 16%;
   }
+
   .info-display {
     margin-top: 18%;
   }
+
   .header h1 {
     font-size: 4rem;
   }
+
   .clock-face {
     font-size: 13rem;
     margin-top: 17%;
   }
+
   .game-score {
     margin-top: 24%;
   }
@@ -440,20 +457,25 @@ input[type="range"]::-moz-range-thumb {
   .header {
     margin-top: 18%;
   }
+
   .clock-face {
     font-size: 14rem;
     margin-top: 16%;
   }
+
   .info-display {
     margin-top: 18%;
   }
+
   .header h1 {
     font-size: 4rem;
   }
+
   .clock-face {
     font-size: 13rem;
     margin-top: 17%;
   }
+
   .game-score {
     margin-top: 24%;
   }
@@ -463,17 +485,21 @@ input[type="range"]::-moz-range-thumb {
   .header {
     margin-top: 14%;
   }
+
   .info-display {
     margin-top: 10%;
     font-size: 1.7rem;
   }
+
   .clock-face {
     font-size: 13.2rem;
     margin-top: 9%;
   }
+
   button {
     margin-top: 19%;
   }
+
   .game-score {
     margin-top: 18%;
   }
@@ -483,17 +509,21 @@ input[type="range"]::-moz-range-thumb {
   .header {
     margin-top: 18%;
   }
+
   .info-display {
     margin-top: 13%;
     font-size: 1.7rem;
   }
+
   .clock-face {
     font-size: 12rem;
     margin-top: 10%;
   }
+
   button {
     margin-top: 22%;
   }
+
   .game-score {
     margin-top: 20%;
   }
@@ -503,17 +533,21 @@ input[type="range"]::-moz-range-thumb {
   .header {
     margin-top: 12%;
   }
+
   .info-display {
     margin-top: 10%;
     font-size: 1.7rem;
   }
+
   .clock-face {
     font-size: 11.9rem;
     margin-top: 9%;
   }
+
   button {
     margin-top: 17%;
   }
+
   .game-score {
     margin-top: 14%;
   }
@@ -524,21 +558,39 @@ input[type="range"]::-moz-range-thumb {
     margin-top: 15%;
     margin-left: 1rem;
   }
+
   .header h1 {
     font-size: 3.5rem;
   }
+
   .info-display {
     margin-top: 15%;
     font-size: 1.7rem;
   }
+
   .clock-face {
     font-size: 11rem;
     margin-top: 12%;
   }
+
   button {
     margin-top: 23%;
   }
+
   .game-score {
     margin-top: 17%;
+  }
+
+  .time-input {
+    width: 4rem;
+    font-size: 2.7rem;
+  }
+
+  .input-time {
+    margin: 0.5rem;
+  }
+
+  .timers {
+    margin-top: 3rem;
   }
 }

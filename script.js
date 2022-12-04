@@ -430,12 +430,18 @@ class Utility {
 
   static saveVolumeSettings() {
     localStorage.setItem("alarmVolume", Settings.alarmVolume);
+    localStorage.setItem("finalAlarmVolume", Settings.finalAlarmVolume);
+    localStorage.setItem("effectsVolume", Settings.effectsVolume);
   }
 
   static loadVolumeSettings() {
     if ("alarmVolume" in localStorage) {
       AudioPlayer.alarmVolume.gain.value = 
-      Number(localStorage.getItem("alarmVolume"));
+        Number(localStorage.getItem("alarmVolume"));
+      AudioPlayer.finalAlarmVolume.gain.value = 
+        Number(localStorage.getItem("finalAlarmVolume"));
+      AudioPlayer.effectsVolume.gain.value = 
+        Number(localStorage.getItem("effectsVolume"));
     }
   }
 }
@@ -461,6 +467,9 @@ class Settings {
   static #longBreakInput = document.getElementById("long-break");
 
   static #alarmVolumeSlider = document.getElementById("alarm-volume-range");
+  static #finalAlarmVolumeSlider = 
+    document.getElementById("final-alarm-volume-range");
+  static #effectsVolumeSlider = document.getElementById("effects-volume-range");
 
   static workTime = [];
   static shortBreak = [];
@@ -468,6 +477,8 @@ class Settings {
   static tomatoesToWin = null;
   static longBreakFrequency = null;
   static alarmVolume = null;
+  static finalAlarmVolume = null;
+  static effectsVolume = null;
 
   static init() {
     this.#settingsButtonEvent(this.#settingsButton);
@@ -478,13 +489,28 @@ class Settings {
     this.#pomodoroInputEvent();
     this.#longBreakInputEvent();
     this.#alarmVolumeSliderEvent();
+    this.#finalArmVolumeSliderEvent();
+    this.#effectsVolumeSliderEvent();
   }
 
   static #alarmVolumeSliderEvent() {
     this.#alarmVolumeSlider.addEventListener("input", () => {
       this.alarmVolume = Number(this.#alarmVolumeSlider.value);
       AudioPlayer.alarmVolume.gain.value = this.alarmVolume;
-      console.log(AudioPlayer.alarmVolume.gain.value);
+    });
+  }
+
+  static #finalArmVolumeSliderEvent() {
+    this.#finalAlarmVolumeSlider.addEventListener("input", () => {
+      this.finalAlarmVolume = Number(this.#finalAlarmVolumeSlider.value);
+      AudioPlayer.finalAlarmVolume.gain.value = this.finalAlarmVolume;
+    });
+  }
+
+  static #effectsVolumeSliderEvent() {
+    this.#effectsVolumeSlider.addEventListener("input", () => {
+      this.effectsVolume = Number(this.#effectsVolumeSlider.value);
+      AudioPlayer.effectsVolume.gain.value = this.effectsVolume;
     });
   }
 
@@ -649,6 +675,12 @@ class Settings {
     this.#longBreakInput.value = pomodoro.longBreakFrequency;
     this.alarmVolume = AudioPlayer.alarmVolume.gain.value;
     this.#alarmVolumeSlider.value = AudioPlayer.alarmVolume.gain.value;
+    this.finalAlarmVolume = AudioPlayer.finalAlarmVolume.gain.value;
+    this.#finalAlarmVolumeSlider.value = 
+      AudioPlayer.finalAlarmVolume.gain.value;
+    this.effectsVolume = AudioPlayer.effectsVolume.gain.value;
+    this.#effectsVolumeSlider.value = 
+      AudioPlayer.effectsVolume.gain.value;
   }
  
   static #settingsButtonEvent(button) {
