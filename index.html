@@ -107,6 +107,33 @@
           <input type="range" id="effects-volume-range" class="volume-range"
             min="-1" max="1" value="0" step="0.01">
         </div>
+        <div class="alarm-menus">
+          <div class="alarm-menu">
+            <label class="alarm-label" for="alarms">Alarm</label>
+            <select name="alarms" id="alarm-menu">
+              <option value="sounds/mixkit-sound-alert-in-hall-1006.wav">
+                alarm1</option>
+              <option value="sounds/mixkit-spaceship-alarm-998.wav">
+                alarm2</option>
+            </select>
+          </div>
+          <div class="final-alarm-menu">
+            <label class="alarm-label" for="final-alarms">
+              Final alarm</label>
+            <select name="final-alarms" id="final-alarm-menu">
+              <option value="">alarm2</option>
+              <option value="">alarm1</option>
+            </select>
+          </div>
+          <div class="button-click-menu">
+            <label class="button-label" for="button-click">
+              Button click</label>
+            <select name="button-click" id="button-click-menu">
+              <option value="">click1</option>
+              <option value="">click2</option>
+            </select>
+          </div>
+        </div>
         <button class="apply-settings" id="apply-settings">Apply</button>
       </form>
     </div>

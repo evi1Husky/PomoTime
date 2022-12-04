@@ -297,7 +297,7 @@ as well as provide volume control */
 
 class AudioPlayer {
   static soundsArray = [
-    new Audio("sounds/mixkit-sound-alert-in-hall-1006.wav"),
+    new Audio(this.loadAlarmSettings()),
     new Audio("sounds/mixkit-mouse-click-close-1113.wav"),
     new Audio("sounds/mixkit-long-pop-2358.wav"),
     new Audio("sounds/mixkit-bubble-pop-up-alert-notification-2357.wav"),
@@ -312,6 +312,14 @@ class AudioPlayer {
   static alarmVolume = null;
   static finalAlarmVolume = null;
   static audioContextCreated = false;
+
+  static loadAlarmSettings() {
+    if ("alarm" in localStorage) {
+      return localStorage.getItem("alarm");
+    } else {
+      return "sounds/mixkit-sound-alert-in-hall-1006.wav";
+    }
+  }
 
   static createAudioContext() {
     return new (window.AudioContext);
@@ -471,6 +479,8 @@ class Settings {
     document.getElementById("final-alarm-volume-range");
   static #effectsVolumeSlider = document.getElementById("effects-volume-range");
 
+  static #alarmMenu = document.getElementById("alarm-menu");
+
   static workTime = [];
   static shortBreak = [];
   static longBreak = [];
@@ -479,6 +489,7 @@ class Settings {
   static alarmVolume = null;
   static finalAlarmVolume = null;
   static effectsVolume = null;
+  static #alarmSettingsChanged = false;
 
   static init() {
     this.#settingsButtonEvent(this.#settingsButton);
@@ -491,6 +502,14 @@ class Settings {
     this.#alarmVolumeSliderEvent();
     this.#finalArmVolumeSliderEvent();
     this.#effectsVolumeSliderEvent();
+    this.#alarmMenuEvent();
+  }
+
+  static #alarmMenuEvent() {
+    this.#alarmMenu.addEventListener("input", () => {
+      localStorage.setItem("alarm", this.#alarmMenu.value);
+      this.#alarmSettingsChanged = true;
+    });
   }
 
   static #alarmVolumeSliderEvent() {
@@ -649,6 +668,9 @@ class Settings {
         Utility.saveSettings();
         Utility.saveVolumeSettings();
         this.#settingsMenu.style.display = "none";
+        if (this.#alarmSettingsChanged) {
+          location.reload();
+        }
       }, 500);
     });
   }
@@ -681,6 +703,7 @@ class Settings {
     this.effectsVolume = AudioPlayer.effectsVolume.gain.value;
     this.#effectsVolumeSlider.value = 
       AudioPlayer.effectsVolume.gain.value;
+    this.#alarmMenu.value = AudioPlayer.loadAlarmSettings();
   }
  
   static #settingsButtonEvent(button) {
@@ -763,6 +786,13 @@ class Settings {
       }, 200);
     });
   }
+
+  static disableSettings() {
+    this.#pomodoroInput.disabled = true;
+    this.#pomodoroInput.style.color= "#a4a6aa";
+    this.#alarmMenu.disabled = true;
+    this.#alarmMenu.style.color= "#a4a6aa";
+  }
 }
 
 // Main app class featuring game loop and logic
@@ -802,6 +832,7 @@ class Pomodoro {
     Renderer.buttonEffects(this.#tryAgain);
     Renderer.buttonEffects(this.#closeButton);
     this.#startButton.addEventListener("click", () => {
+      Settings.disableSettings();
       Renderer.disableStartButton();
       if (!AudioPlayer.audioContextCreated) {
         const audioContext = AudioPlayer.createAudioContext();
@@ -863,9 +894,9 @@ class Pomodoro {
     Renderer.gameOverTakeAwayTomatoes(length);
     Renderer.endGameMessage(true, this.#tomatoArray.length);
     this.tomatoScore -= this.#tomatoArray.length;
-    this.#tomatoArray.length = 0;
     Utility.saveProgress(this.tomatoScore);
-    this.tomatoScore -= 10;
+    this.tomatoScore -= this.#tomatoArray.length;
+    this.#tomatoArray.length = 0;
     Utility.saveProgress(this.tomatoScore);
     this.#tryAgainButtonEvent();
   }
@@ -898,7 +929,7 @@ class Pomodoro {
   }
 
   #gameWon() {
-    this.tomatoScore += 10;
+    this.tomatoScore += this.#tomatoArray.length;
     Utility.saveProgress(this.tomatoScore);
     Renderer.updateTomatoScore(this.tomatoScore);
     AudioPlayer.gameWinSound();

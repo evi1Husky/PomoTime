@@ -169,9 +169,9 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
 .settings-menu {
   padding: 0.3rem;
   position: absolute;
-  margin-top: 13rem;
+  margin-top: 7.7rem;
   width: 40rem;
-  height: 40.2rem;
+  height: 47rem;
   z-index: 100;
   border: #555a61a9 solid 0.5px;
   background-color: #2a2d34;
@@ -199,7 +199,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
 }
 
 .apply-settings {
-  margin-top: 2.3rem;
+  margin-top: 2.5rem;
   margin-bottom: 1.4rem;
   font-family: 'Arial Rounded MT Bold', sans-serif;
   color: #25282e;
@@ -246,7 +246,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   background: none;
   border: none;
   color: rgb(157, 207, 83);
-  border-bottom: 0.1rem solid #a4a6aa;
+  border-bottom: 0.1rem dotted #a4a6aa;
   outline: none;
 }
 
@@ -266,7 +266,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
 }
 
 .number-input {
-  width: 6rem;
+  width: 5rem;
   text-align: center;
   padding-right: 1rem;
 }
@@ -331,12 +331,65 @@ input[type="range"]::-moz-range-thumb {
   border: none;
 }
 
+.alarm-menus {
+  display: flex;
+  margin-top: 2.3rem;
+}
+
+.alarm-menu, .final-alarm-menu, .button-click-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.alarm-label, .button-label {
+  margin-bottom: 0.7rem;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #a4a6aa;
+}
+
+.alarm-menu label {
+  margin-right: 0.4rem;
+}
+
+.final-alarm-menu label {
+   margin-left: 3rem;
+}
+
+.button-click-menu label {
+  margin-left: 3rem;
+}
+
+#alarm-menu {
+  width: 9rem;
+}
+
+#final-alarm-menu {
+  margin-left: 3rem;
+  width: 9rem;
+}
+
+#button-click-menu {
+  margin-left: 3rem;
+  width: 9rem;
+}
+
+#alarm-menu, #final-alarm-menu, #button-click-menu {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  color: rgb(157, 207, 83);
+  text-align: center;
+  border-bottom: 0.1rem dotted #a4a6aa;
+}
+
 @media screen and (max-width:420px) {
   .pomodoro {
     width: 99.5%;
     height: 99.5%;
   }
-  
+
   .game-score {
     margin-left: 9%;
   }
