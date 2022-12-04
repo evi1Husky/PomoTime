@@ -296,7 +296,7 @@ class Renderer {
 as well as provide volume control */
 
 class AudioPlayer {
-  static #soundsArray = [
+  static soundsArray = [
     new Audio("sounds/mixkit-sound-alert-in-hall-1006.wav"),
     new Audio("sounds/mixkit-mouse-click-close-1113.wav"),
     new Audio("sounds/mixkit-long-pop-2358.wav"),
@@ -311,6 +311,7 @@ class AudioPlayer {
   static effectsVolume = null;
   static alarmVolume = null;
   static finalAlarmVolume = null;
+  static audioContextCreated = false;
 
   static createAudioContext() {
     return new (window.AudioContext);
@@ -323,9 +324,9 @@ class AudioPlayer {
     this.effectsVolume.connect(audioContext.destination);
     this.alarmVolume.connect(audioContext.destination);
     this.finalAlarmVolume.connect(audioContext.destination);
-    for (let index = 0; index < this.#soundsArray.length; index++) {
+    for (let index = 0; index < this.soundsArray.length; index++) {
       this.#sourcesArray.push(
-        audioContext.createMediaElementSource(this.#soundsArray[index]));
+        audioContext.createMediaElementSource(this.soundsArray[index]));
       this.#sourcesArray[index].connect(audioContext.destination);
       if (index === 0) {
         this.#sourcesArray[index].connect(this.alarmVolume);
@@ -342,45 +343,45 @@ class AudioPlayer {
 
   static alarm(time, timer) {
     if ((timer === 1) && (time[0] === 0) && 
-      (time[1] === this.#soundsArray[0].duration << 0)) {
-      this.#soundsArray[0].play();
+      (time[1] === this.soundsArray[0].duration << 0)) {
+      this.soundsArray[0].play();
     }
     if ((timer === 2) && (time[0] === 0) && (time[1] === 59)) {
-      this.#soundsArray[0].play();
+      this.soundsArray[0].play();
     }
     if ((timer === 2) && (time[0] === 0) && 
-      (time[1] === this.#soundsArray[6].duration << 0)) {
-      this.#soundsArray[6].play();
+      (time[1] === this.soundsArray[6].duration << 0)) {
+      this.soundsArray[6].play();
     }
   }
 
   static buttonClick() {
-    this.#soundsArray[1].play();
+    this.soundsArray[1].play();
   }
 
   static tomatoPop() {
-    this.#soundsArray[2].play();
+    this.soundsArray[2].play();
   }
 
   static tomatoShrink() {
-    this.#soundsArray[3].play();
+    this.soundsArray[3].play();
   }
 
   static gameOverSound() {
-    this.#soundsArray[4].play();
+    this.soundsArray[4].play();
   }
 
   static gameWinSound() {
-    this.#soundsArray[5].play();
+    this.soundsArray[5].play();
   }
 
   static settingsClick() {
-    this.#soundsArray[7].play();
+    this.soundsArray[7].play();
   }
 
   static resetAlarm() {
-    this.#soundsArray[0].pause();
-    this.#soundsArray[6].pause();
+    this.soundsArray[0].pause();
+    this.soundsArray[6].pause();
   }
 }
 
@@ -422,7 +423,19 @@ class Utility {
       pomodoro.timerSchedule[1] = pomodoro.workTime;
       pomodoro.timerSchedule[2] = pomodoro.shortBreak;
       pomodoro.tomatoesToWin = Number(localStorage.getItem("tomatoesToWin"));
-      pomodoro.longBreakFrequency = Number(localStorage.getItem("longBreakFrequency"));
+      pomodoro.longBreakFrequency = 
+        Number(localStorage.getItem("longBreakFrequency"));
+    }
+  }
+
+  static saveVolumeSettings() {
+    localStorage.setItem("alarmVolume", Settings.alarmVolume);
+  }
+
+  static loadVolumeSettings() {
+    if ("alarmVolume" in localStorage) {
+      AudioPlayer.alarmVolume.gain.value = 
+      Number(localStorage.getItem("alarmVolume"));
     }
   }
 }
@@ -447,11 +460,14 @@ class Settings {
   static #pomodoroInput = document.getElementById("pomodoros-to-complete");
   static #longBreakInput = document.getElementById("long-break");
 
+  static #alarmVolumeSlider = document.getElementById("alarm-volume-range");
+
   static workTime = [];
   static shortBreak = [];
   static longBreak = [];
   static tomatoesToWin = null;
   static longBreakFrequency = null;
+  static alarmVolume = null;
 
   static init() {
     this.#settingsButtonEvent(this.#settingsButton);
@@ -461,6 +477,15 @@ class Settings {
     this.#timeInputEvents();
     this.#pomodoroInputEvent();
     this.#longBreakInputEvent();
+    this.#alarmVolumeSliderEvent();
+  }
+
+  static #alarmVolumeSliderEvent() {
+    this.#alarmVolumeSlider.addEventListener("input", () => {
+      this.alarmVolume = Number(this.#alarmVolumeSlider.value);
+      AudioPlayer.alarmVolume.gain.value = this.alarmVolume;
+      console.log(AudioPlayer.alarmVolume.gain.value);
+    });
   }
 
   static #pomodoroInputEvent() {
@@ -596,6 +621,7 @@ class Settings {
       setTimeout(() => {
         this.#applySettings();
         Utility.saveSettings();
+        Utility.saveVolumeSettings();
         this.#settingsMenu.style.display = "none";
       }, 500);
     });
@@ -621,6 +647,8 @@ class Settings {
     this.longBreakFrequency = pomodoro.longBreakFrequency;
     this.#pomodoroInput.value = pomodoro.tomatoesToWin;
     this.#longBreakInput.value = pomodoro.longBreakFrequency;
+    this.alarmVolume = AudioPlayer.alarmVolume.gain.value;
+    this.#alarmVolumeSlider.value = AudioPlayer.alarmVolume.gain.value;
   }
  
   static #settingsButtonEvent(button) {
@@ -643,6 +671,12 @@ class Settings {
       button.style.color = "tomato";
       button.style.transition = "0s";
       button.disabled = true;
+      if (!AudioPlayer.audioContextCreated) {
+        const audioContext = AudioPlayer.createAudioContext();
+        AudioPlayer.connectAudioNodes(audioContext);
+        AudioPlayer.audioContextCreated = true;
+        Utility.loadVolumeSettings();
+      }
       AudioPlayer.settingsClick();
       setTimeout(() => {
         button.style.color = "rgb(157, 207, 83)";
@@ -737,9 +771,11 @@ class Pomodoro {
     Renderer.buttonEffects(this.#closeButton);
     this.#startButton.addEventListener("click", () => {
       Renderer.disableStartButton();
-      if (!this.buttonClicked) {
+      if (!AudioPlayer.audioContextCreated) {
         const audioContext = AudioPlayer.createAudioContext();
         AudioPlayer.connectAudioNodes(audioContext);
+        AudioPlayer.audioContextCreated = true;
+        Utility.loadVolumeSettings();
       }
       Renderer.idleClockFace(this.#round);
       AudioPlayer.resetAlarm();

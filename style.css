@@ -169,9 +169,9 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
 .settings-menu {
   padding: 0.3rem;
   position: absolute;
-  margin-top: 20rem;
+  margin-top: 13rem;
   width: 40rem;
-  height: 25rem;
+  height: 35rem;
   z-index: 100;
   border: #555a61a9 solid 0.5px;
   background-color: #2a2d34;
@@ -217,7 +217,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   color: #a4a6aa;
   display: flex;
   flex-direction: row;
-  margin-top: 2.1rem;
+  margin-top: 2.6rem;
   align-items: center;
   justify-content: center;
 }
@@ -261,17 +261,8 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   flex-direction: column;
 }
 
-input[type='number'] {
-  -moz-appearance:textfield;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-
 .number-input-form {
-  margin-top: 0.8rem;
+  margin-top: 1.5rem;
 }
 
 .number-input {
@@ -295,6 +286,51 @@ input::-webkit-inner-spin-button {
   margin-left: 3rem;
 }
 
+.alarm-volume {
+  margin-top: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.volume-range-label {
+  margin-bottom: 1.1rem;
+  font-size: 1.4rem;
+  color: #a4a6aa;
+}
+
+.volume-range {
+appearance: none;
+ width: 200%;
+ background: #a4a6aa;
+ height: 0.3rem;
+ border-radius: 1rem;
+ border: none;
+ outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -webkit-border-radius: 1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+  border-radius: 1rem;
+  background: rgb(157, 207, 83);
+  border: none;
+}
+
+input[type="range"]::-moz-range-thumb {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -moz-border-radius: 1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+  border-radius: 1rem;
+  background: rgb(157, 207, 83);
+  border: none;
+}
+
 @media screen and (max-width:420px) {
   .pomodoro {
     width: 99.5%;
@@ -312,7 +348,7 @@ input::-webkit-inner-spin-button {
   .settings-menu {
     margin-top: 70%;
     width: 95%;
-    height: 16.7rem;
+    height: 25rem;
   }
 
   .close-menu {
@@ -321,7 +357,7 @@ input::-webkit-inner-spin-button {
   }
 
   .apply-settings {
-    margin-top: 1.3rem !important; 
+    margin-top: 3rem !important; 
   }
 
   button:not(.settings, .close-menu) {
