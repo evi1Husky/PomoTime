@@ -35,7 +35,7 @@ body {
 header {
   display: flex;
   margin-left: 1rem;
-  margin-top: 4rem;
+  margin-top: 4.5rem;
 }
 
 header img {
@@ -107,6 +107,35 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   pointer-events: none;
 }
 
+.line {
+  position: absolute;
+  background-color: rgb(120, 189, 189);
+  width: 40.8rem;
+  z-index: 1;
+  height: 1.5rem;
+  margin-top: 0.3px;
+  border-radius: 100rem 100rem 0px 0px;
+  background: linear-gradient(to right, #e66465, #9198e5);
+}
+
+@media screen and (max-width:420px) {
+  .line {
+    position: absolute;
+    background-color: rgb(120, 189, 189);
+    width: 99%;
+    height: 1.5rem;
+    margin-top: 0.3px;
+    border-radius: 100rem 100rem 0px 0px;
+    background: linear-gradient(to right, #e66465, #9198e5);
+  }
+}
+
+#sparkles {
+  height: 2rem;
+  position: absolute;
+  margin-left: 0.5rem;
+}
+
 #try-again {
   display: none;
   font-size: 1.89rem;
@@ -162,7 +191,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   font-size: 1.6rem;
   color: #a4a6aa;
   height: 2rem;
-  margin-top: 6.5rem;
+  margin-top: 6.3rem;
   margin-left: 4.7rem;
 }
 
@@ -383,6 +412,8 @@ input[type="range"]::-moz-range-thumb {
   text-align: center;
   border-bottom: 0.1rem dotted #a4a6aa;
 }
+
+
 
 @media screen and (max-width:420px) {
   .pomodoro {

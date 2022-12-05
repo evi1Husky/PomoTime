@@ -191,7 +191,11 @@ class Renderer {
   static updateInfoDisplay(message, currentTimer, pomodoroJustReceived) {
     const previousText = this.#infoDisplay.textContent;
     if (message === null) {
-      this.#infoDisplay.textContent = "Press start to begin ✨";
+      const sparkles = document.createElement("img");
+      sparkles.setAttribute("id", "sparkles");
+      sparkles.setAttribute("src", "sparkles_color.svg");
+      this.#infoDisplay.textContent = "Press start to begin ";
+      this.#infoDisplay.appendChild(sparkles);
     }
     if (currentTimer === 1) {
       this.#infoDisplay.textContent = "Time to focus";
