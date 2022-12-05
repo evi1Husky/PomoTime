@@ -298,12 +298,12 @@ as well as provide volume control */
 class AudioPlayer {
   static soundsArray = [
     new Audio(this.loadAlarmSettings()),
-    new Audio("sounds/mixkit-mouse-click-close-1113.wav"),
+    new Audio(this.loadButtonClickSettings()),
     new Audio("sounds/mixkit-long-pop-2358.wav"),
     new Audio("sounds/mixkit-bubble-pop-up-alert-notification-2357.wav"),
     new Audio("sounds/mixkit-dramatic-metal-explosion-impact-1687.wav"),
     new Audio("sounds/mixkit-game-success-alert-2039.wav"),
-    new Audio("sounds/mixkit-spaceship-alarm-998.wav"),
+    new Audio(this.loadFinalAlarmSettings()),
     new Audio("sounds/mixkit-clear-mouse-clicks-2997.wav"),
   ];
 
@@ -318,6 +318,22 @@ class AudioPlayer {
       return localStorage.getItem("alarm");
     } else {
       return "sounds/mixkit-sound-alert-in-hall-1006.wav";
+    }
+  }
+
+  static loadFinalAlarmSettings() {
+    if ("finalAlarm" in localStorage) {
+      return localStorage.getItem("finalAlarm");
+    } else {
+      return "sounds/mixkit-spaceship-alarm-998.wav";
+    }
+  }
+
+  static loadButtonClickSettings() {
+    if ("buttonClick" in localStorage) {
+      return localStorage.getItem("buttonClick");
+    } else {
+      return "sounds/mixkit-mouse-click-close-1113.wav";
     }
   }
 
@@ -480,6 +496,8 @@ class Settings {
   static #effectsVolumeSlider = document.getElementById("effects-volume-range");
 
   static #alarmMenu = document.getElementById("alarm-menu");
+  static #finalAlarmMenu = document.getElementById("final-alarm-menu");
+  static #buttonClickMenu = document.getElementById("button-click-menu");
 
   static workTime = [];
   static shortBreak = [];
@@ -502,13 +520,38 @@ class Settings {
     this.#alarmVolumeSliderEvent();
     this.#finalArmVolumeSliderEvent();
     this.#effectsVolumeSliderEvent();
-    this.#alarmMenuEvent();
+    this.#soundMenuEvent(this.#alarmMenu, "alarm");
+    this.#soundMenuEvent(this.#finalAlarmMenu, "finalAlarm");
+    this.#soundMenuEvent(this.#buttonClickMenu, "buttonClick");
   }
 
-  static #alarmMenuEvent() {
-    this.#alarmMenu.addEventListener("input", () => {
-      localStorage.setItem("alarm", this.#alarmMenu.value);
+  static #soundMenuEvent(soundMenu, name) {
+    soundMenu.addEventListener("input", () => {
+      localStorage.setItem(name, soundMenu.value);
       this.#alarmSettingsChanged = true;
+      const audioPreview = new Audio(soundMenu.value);
+      audioPreview.play();
+      console.log(soundMenu.id);
+      let volume = null;
+      switch (soundMenu.id) {
+      case "alarm-menu":
+        volume = this.alarmVolume + 1;
+        break;
+      case "final-alarm-menu":
+        volume = this.finalAlarmVolume + 1;
+        break;
+      case "button-click-menu":
+        volume = this.effectsVolume + 1;
+        break;
+      }
+      if (volume > 1) {
+        volume = 1;
+      }
+      audioPreview.volume = volume;
+      setTimeout(() => {
+        audioPreview.pause();
+        audioPreview.currentTime = 0;
+      }, 1000);
     });
   }
 
@@ -704,6 +747,7 @@ class Settings {
     this.#effectsVolumeSlider.value = 
       AudioPlayer.effectsVolume.gain.value;
     this.#alarmMenu.value = AudioPlayer.loadAlarmSettings();
+    this.#finalAlarmMenu.value = AudioPlayer.loadFinalAlarmSettings();
   }
  
   static #settingsButtonEvent(button) {
@@ -792,6 +836,10 @@ class Settings {
     this.#pomodoroInput.style.color= "#a4a6aa";
     this.#alarmMenu.disabled = true;
     this.#alarmMenu.style.color= "#a4a6aa";
+    this.#finalAlarmMenu.disabled = true;
+    this.#finalAlarmMenu.style.color= "#a4a6aa";
+    this.#buttonClickMenu.disabled = true;
+    this.#buttonClickMenu.style.color= "#a4a6aa";
   }
 }
 

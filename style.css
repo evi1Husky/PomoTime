@@ -401,9 +401,9 @@ input[type="range"]::-moz-range-thumb {
   }
 
   .settings-menu {
-    margin-top: 50%;
+    margin-top: 20vh;
     width: 95%;
-    height: 40.1rem;
+    height: 46.6rem;
   }
 
   .close-menu {
@@ -412,7 +412,7 @@ input[type="range"]::-moz-range-thumb {
   }
 
   .apply-settings {
-    margin-top: 2.3rem !important; 
+    margin-top: 2.4rem !important; 
   }
 
   button:not(.settings, .close-menu) {
@@ -645,5 +645,31 @@ input[type="range"]::-moz-range-thumb {
 
   .timers {
     margin-top: 3rem;
+  }
+
+  #alarm-menu {
+    width: 8rem;
+  }
+  
+  #final-alarm-menu {
+    margin-left: 1rem;
+    width: 8rem;
+  }
+  
+  #button-click-menu {
+    margin-left: 1rem;
+    width: 8.5rem;
+  }
+
+  .alarm-menu label {
+    margin-right: 0.4rem;
+  }
+  
+  .final-alarm-menu label {
+     margin-left: 1rem;
+  }
+  
+  .button-click-menu label {
+    margin-left: 1rem;
   }
 }
