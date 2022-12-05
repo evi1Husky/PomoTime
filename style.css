@@ -115,7 +115,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   height: 1.5rem;
   margin-top: 0.3px;
   border-radius: 100rem 100rem 0px 0px;
-  background: linear-gradient(to right, #e66465, #9198e5);
+  background: linear-gradient(to right, #f87571, #9198e5);
 }
 
 @media screen and (max-width:420px) {
@@ -275,7 +275,6 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   background: none;
   border: none;
   color: rgb(157, 207, 83);
-  border-bottom: 0.1rem dotted #a4a6aa;
   outline: none;
 }
 
@@ -410,10 +409,15 @@ input[type="range"]::-moz-range-thumb {
   font-family: 'Arial Rounded MT Bold', sans-serif;
   color: rgb(157, 207, 83);
   text-align: center;
-  border-bottom: 0.1rem dotted #a4a6aa;
 }
 
-
+.link {
+  text-decoration: none;
+  color: #a4a6aa;
+  position: absolute;
+  bottom: 7.3%;
+  right: 25%;
+}
 
 @media screen and (max-width:420px) {
   .pomodoro {

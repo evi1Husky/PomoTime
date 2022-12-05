@@ -468,6 +468,16 @@ class Utility {
         Number(localStorage.getItem("effectsVolume"));
     }
   }
+
+  static detectSafari() {
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+      for (let i = 0; i < AudioPlayer.soundsArray.length; i++) {
+        AudioPlayer.soundsArray[i].play();
+        AudioPlayer.soundsArray[i].pause();
+        AudioPlayer.soundsArray[i].currentTime = 0;
+      }
+    }
+  }
 }
 
 //Settings menu
@@ -495,9 +505,9 @@ class Settings {
     document.getElementById("final-alarm-volume-range");
   static #effectsVolumeSlider = document.getElementById("effects-volume-range");
 
-  static #alarmMenu = document.getElementById("alarm-menu");
-  static #finalAlarmMenu = document.getElementById("final-alarm-menu");
-  static #buttonClickMenu = document.getElementById("button-click-menu");
+  static alarmMenu = document.getElementById("alarm-menu");
+  static finalAlarmMenu = document.getElementById("final-alarm-menu");
+  static buttonClickMenu = document.getElementById("button-click-menu");
 
   static workTime = [];
   static shortBreak = [];
@@ -520,9 +530,9 @@ class Settings {
     this.#alarmVolumeSliderEvent();
     this.#finalArmVolumeSliderEvent();
     this.#effectsVolumeSliderEvent();
-    this.#soundMenuEvent(this.#alarmMenu, "alarm");
-    this.#soundMenuEvent(this.#finalAlarmMenu, "finalAlarm");
-    this.#soundMenuEvent(this.#buttonClickMenu, "buttonClick");
+    this.#soundMenuEvent(this.alarmMenu, "alarm");
+    this.#soundMenuEvent(this.finalAlarmMenu, "finalAlarm");
+    this.#soundMenuEvent(this.buttonClickMenu, "buttonClick");
   }
 
   static #soundMenuEvent(soundMenu, name) {
@@ -745,9 +755,9 @@ class Settings {
     this.effectsVolume = AudioPlayer.effectsVolume.gain.value;
     this.#effectsVolumeSlider.value = 
       AudioPlayer.effectsVolume.gain.value;
-    this.#alarmMenu.value = AudioPlayer.loadAlarmSettings();
-    this.#finalAlarmMenu.value = AudioPlayer.loadFinalAlarmSettings();
-    this.#buttonClickMenu.value = AudioPlayer.loadButtonClickSettings();
+    this.alarmMenu.value = AudioPlayer.loadAlarmSettings();
+    this.finalAlarmMenu.value = AudioPlayer.loadFinalAlarmSettings();
+    this.buttonClickMenu.value = AudioPlayer.loadButtonClickSettings();
   }
   
   static #settingsButtonEvent(button) {
@@ -834,12 +844,12 @@ class Settings {
   static disableSettings() {
     this.#pomodoroInput.disabled = true;
     this.#pomodoroInput.style.color= "#a4a6aa";
-    this.#alarmMenu.disabled = true;
-    this.#alarmMenu.style.color= "#a4a6aa";
-    this.#finalAlarmMenu.disabled = true;
-    this.#finalAlarmMenu.style.color= "#a4a6aa";
-    this.#buttonClickMenu.disabled = true;
-    this.#buttonClickMenu.style.color= "#a4a6aa";
+    this.alarmMenu.disabled = true;
+    this.alarmMenu.style.color= "#a4a6aa";
+    this.finalAlarmMenu.disabled = true;
+    this.finalAlarmMenu.style.color= "#a4a6aa";
+    this.buttonClickMenu.disabled = true;
+    this.buttonClickMenu.style.color= "#a4a6aa";
   }
 }
 
@@ -869,6 +879,7 @@ class Pomodoro {
   #pomodoroJustReceived = false;
 
   loop() {
+    Utility.detectSafari();
     Settings.init();
     Utility.loadSettings();
     this.tomatoScore = Utility.loadProgress();
