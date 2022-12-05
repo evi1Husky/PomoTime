@@ -531,7 +531,6 @@ class Settings {
       this.#alarmSettingsChanged = true;
       const audioPreview = new Audio(soundMenu.value);
       audioPreview.play();
-      console.log(soundMenu.id);
       let volume = null;
       switch (soundMenu.id) {
       case "alarm-menu":
@@ -748,8 +747,9 @@ class Settings {
       AudioPlayer.effectsVolume.gain.value;
     this.#alarmMenu.value = AudioPlayer.loadAlarmSettings();
     this.#finalAlarmMenu.value = AudioPlayer.loadFinalAlarmSettings();
+    this.#buttonClickMenu.value = AudioPlayer.loadButtonClickSettings();
   }
- 
+  
   static #settingsButtonEvent(button) {
     button.addEventListener("mouseover", () => {
       button.style.color = "rgb(157, 207, 83)";
