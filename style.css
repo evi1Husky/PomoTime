@@ -193,6 +193,7 @@ button:disabled:not(.settings, .close-menu, .apply-settings) {
   height: 2rem;
   margin-top: 6.3rem;
   margin-left: 4.7rem;
+  
 }
 
 .settings-menu {
